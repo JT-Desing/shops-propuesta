@@ -1,0 +1,3368 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>ePayco Shops | Propuesta web GSAP</title>
+<meta content="Propuesta web para ePayco Shops basada en el nodo principal de Figma: HTML, CSS y animaciones GSAP." name="description"/>
+<style>
+:root {
+  --black: #16161d;
+  --black-2: #1d1d1d;
+  --dark: #0f1117;
+  --white: #ffffff;
+  --gray-bg: #f4f4f4;
+  --gray-soft: #f7f7f8;
+  --gray-line: #e6e6e8;
+  --gray-text: #616161;
+  --text: #1d1d1d;
+  --red: #ed1c27;
+  --red-dark: #bf0615;
+  --red-soft: #fff1f2;
+  --green: #008f5a;
+  --green-soft: #ecfdf3;
+  --blue: #0082c4;
+  --blue-soft: #eaf6fc;
+  --amber: #f8991d;
+  --amber-soft: #fff7e8;
+  --shadow: 1px 18px 48px rgba(22, 22, 29, .12);
+  --shadow-soft: 1px 12px 32px rgba(22, 22, 29, .08);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --container: 1240px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--white);
+  font-family: "Davivienda", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+body.nav-open { overflow: hidden; }
+a { color: inherit; text-decoration: none; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+img, svg { display: block; max-width: 100%; }
+
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  z-index: 999;
+  transform: translateY(-140%);
+  background: var(--white);
+  color: var(--black);
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-soft);
+}
+.skip-link:focus { transform: translateY(0); }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
+  width: min(var(--container), calc(100vw - 48px));
+  margin-inline: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 93px;
+  background: var(--black);
+  color: var(--white);
+  transition: box-shadow .24s ease, background .24s ease;
+}
+.site-header.is-scrolled { box-shadow: 0 12px 32px rgba(0,0,0,.22); }
+.nav-shell {
+  width: min(1270px, calc(100vw - 48px));
+  margin-inline: auto;
+  height: 93px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 210px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.brand-mark { width: 42px; height: 42px; display: grid; place-items: center; }
+.brand-copy { white-space: nowrap; }
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex: 1;
+  color: rgba(255,255,255,.9);
+  font-size: 15px;
+}
+.desktop-nav a { position: relative; padding-block: 12px; }
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .22s ease;
+}
+.desktop-nav a:hover::after,
+.desktop-nav a:focus-visible::after { transform: scaleX(1); }
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+
+.btn {
+  min-height: 48px;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 14px 22px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn:focus-visible,
+.menu-button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(237, 28, 39, .45);
+  outline-offset: 3px;
+}
+.btn-primary { background: var(--black); color: var(--white); box-shadow: 1px 1px 4px rgba(22, 22, 29, .30); }
+.btn-primary:hover { background: #050509; }
+.btn-ghost { color: var(--white); border-color: rgba(255,255,255,.7); background: rgba(255,255,255,.03); }
+.btn-light { background: var(--white); color: var(--black); border-color: var(--gray-line); }
+.btn-white { background: var(--white); color: var(--black); }
+.btn-ghost-light { color: var(--white); border-color: rgba(255,255,255,.75); background: transparent; }
+.btn-large { min-height: 51px; padding-inline: 28px; }
+
+.menu-button {
+  display: none;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  color: var(--white);
+  position: relative;
+}
+.menu-button span:not(.sr-only) {
+  position: absolute;
+  left: 13px;
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;
+  transition: transform .22s ease, opacity .22s ease;
+}
+.menu-button span:nth-child(1) { top: 16px; }
+.menu-button span:nth-child(2) { top: 23px; }
+.menu-button span:nth-child(3) { top: 30px; }
+body.nav-open .menu-button span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.nav-open .menu-button span:nth-child(2) { opacity: 0; }
+body.nav-open .menu-button span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-nav {
+  display: none;
+  position: fixed;
+  inset: 93px 0 auto 0;
+  background: var(--black);
+  padding: 24px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 24px 42px rgba(0,0,0,.35);
+}
+.mobile-nav a { display: block; padding: 14px 0; color: var(--white); }
+.mobile-nav .btn { margin-top: 16px; width: 100%; }
+
+.page { overflow: hidden; }
+section { position: relative; }
+section { scroll-margin-top: 108px; }
+.section-white { background: var(--white); }
+.section-gray { background: var(--gray-bg); }
+.hero { min-height: 860px; padding: 92px 0 96px; }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 578px;
+  gap: 70px;
+  align-items: center;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--red);
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 3px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.hero-title,
+.section-head h2,
+.final-cta h2 {
+  margin: 24px 0 0;
+  letter-spacing: -.055em;
+  color: var(--black);
+}
+.hero-title { max-width: 650px; font-size: clamp(46px, 5vw, 74px); line-height: .98; }
+.hero-lead {
+  max-width: 610px;
+  margin: 30px 0 0;
+  color: var(--gray-text);
+  font-size: 23px;
+  line-height: 1.42;
+}
+.hero-actions { display: flex; gap: 18px; margin-top: 36px; flex-wrap: wrap; }
+.hero-note { margin-top: 28px; color: var(--gray-text); font-weight: 650; line-height: 1.45; max-width: 620px; }
+.hero-visual { position: relative; min-height: 640px; display: grid; place-items: center; }
+.browser-card {
+  width: 578px;
+  min-height: 610px;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+}
+.browser-top {
+  height: 70px;
+  background: var(--black);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 28px;
+}
+.browser-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.4); }
+.browser-url { margin-left: 14px; font-weight: 700; font-size: 14px; color: rgba(255,255,255,.9); }
+.secure-pill,
+.approved-alert {
+  margin-left: auto;
+  color: var(--green);
+  background: var(--green-soft);
+  border: 1px solid rgba(0,143,90,.28);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+.shop-preview { position: relative; padding: 36px 34px 88px; min-height: 492px; }
+.storefront-card {
+  width: 310px;
+  min-height: 420px;
+  background: var(--gray-soft);
+  border: 1px solid var(--gray-line);
+  border-radius: 26px;
+  padding: 28px;
+}
+.store-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.store-header strong { display: block; font-size: 24px; letter-spacing: -.035em; }
+.store-header small { display: block; margin-top: 10px; color: var(--gray-text); font-weight: 650; }
+.mini-logo { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--black); color: var(--white); font-weight: 900; }
+.product-image,
+.phone-product > div,
+.product-mini div {
+  background: linear-gradient(135deg, #ececef, #dfe1e5);
+  position: relative;
+  overflow: hidden;
+}
+.product-image::after,
+.phone-product > div::after,
+.product-mini div::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 65% 30%, rgba(237,28,39,.18), transparent 35%), linear-gradient(135deg, transparent 30%, rgba(255,255,255,.6));
+}
+.product-image { height: 138px; border-radius: 22px; margin-top: 26px; }
+.product-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+.product-thumbs span { height: 64px; border-radius: 16px; background: #e6e7eb; }
+.product-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 20px; }
+.product-row strong { display: block; font-size: 18px; letter-spacing: -.02em; }
+.product-row span { display: block; margin-top: 7px; color: var(--red); font-weight: 800; }
+.product-row button,
+.checkout-card button,
+.phone-product button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--black);
+  color: var(--white);
+  min-height: 36px;
+  padding: 0 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.checkout-card,
+.dashboard-card {
+  position: absolute;
+  right: 36px;
+  width: 172px;
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft);
+}
+.checkout-card { top: 112px; background: var(--white); border: 1px solid var(--gray-line); padding: 24px; }
+.checkout-card h3 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
+.checkout-card p { color: var(--gray-text); font-weight: 700; font-size: 12px; margin: 24px 0 8px; }
+.checkout-card strong { font-size: 24px; letter-spacing: -.04em; }
+.pay-methods { display: flex; gap: 8px; margin: 22px 0 14px; }
+.pay-methods span { border-radius: 999px; padding: 7px 10px; font-size: 11px; font-weight: 800; }
+.pay-methods span:first-child { color: var(--red); background: var(--red-soft); }
+.pay-methods span:last-child { color: var(--blue); background: var(--blue-soft); }
+.checkout-card button { background: var(--red); width: 100%; font-size: 12px; }
+.dashboard-card { top: 362px; background: var(--black); color: var(--white); padding: 24px; }
+.dashboard-card p { margin: 0; color: #d8d8dd; font-weight: 700; font-size: 13px; }
+.dashboard-card strong { display: block; margin-top: 12px; font-size: 30px; letter-spacing: -.05em; }
+.bars { display: flex; align-items: end; gap: 8px; height: 58px; margin-top: 18px; }
+.bars span { width: 18px; border-radius: 6px; background: var(--red); transform-origin: bottom; }
+.bars span:nth-child(1) { height: 22px; }
+.bars span:nth-child(2) { height: 40px; background: var(--red-soft); }
+.bars span:nth-child(3) { height: 58px; }
+.bars span:nth-child(4) { height: 32px; background: var(--red-soft); }
+.approved-alert {
+  position: absolute;
+  left: 82px;
+  right: 78px;
+  bottom: 20px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.approved-alert span { width: 10px; height: 10px; border-radius: 50%; background: var(--green); }
+
+.trust-strip-section { margin-top: -44px; z-index: 4; position: relative; }
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: 30px;
+  box-shadow: var(--shadow-soft);
+  padding: 38px 50px;
+}
+.trust-strip article + article { border-left: 1px solid var(--gray-line); padding-left: 42px; }
+.trust-strip strong { display: block; font-size: clamp(20px, 2vw, 27px); letter-spacing: -.04em; }
+.trust-strip span { display: block; margin-top: 8px; color: var(--gray-text); font-weight: 650; }
+
+.section-head { padding-top: 130px; max-width: 820px; }
+.section-head.compact { max-width: 780px; }
+.section-head h2 { font-size: clamp(38px, 4vw, 56px); line-height: 1.06; }
+.section-head p { margin: 24px 0 0; color: var(--gray-text); font-size: 20px; line-height: 1.45; }
+.value { padding-bottom: 92px; }
+.cards-grid { display: grid; gap: 40px; padding: 56px 0 120px; }
+.cards-grid.three { grid-template-columns: repeat(3, 1fr); }
+.cards-grid.six { grid-template-columns: repeat(3, 1fr); row-gap: 32px; }
+.feature-card,
+.step-card,
+.simple-card,
+.audience-card {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  box-shadow: var(--shadow-soft);
+  min-height: 220px;
+}
+.number-badge {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  font-weight: 900;
+  margin-bottom: 32px;
+}
+.number-badge.blue { background: var(--blue-soft); color: var(--blue); }
+.number-badge.red { background: var(--red-soft); color: var(--red); }
+.number-badge.green { background: var(--green-soft); color: var(--green); }
+.feature-card h3,
+.step-card h3,
+.simple-card h3,
+.audience-card h3 { margin: 0; font-size: 26px; line-height: 1.12; letter-spacing: -.035em; }
+.simple-card h3 { font-size: 22px; }
+.feature-card p,
+.step-card p,
+.simple-card p,
+.audience-card p { color: var(--gray-text); font-size: 16.5px; line-height: 1.48; margin: 18px 0 0; }
+.how { padding-bottom: 104px; }
+.step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; padding-top: 58px; }
+.step-card { min-height: 340px; display: flex; flex-direction: column; }
+.step-card > span { color: var(--red); font-weight: 900; font-size: 18px; margin-bottom: 36px; }
+.step-card p { flex: 1; }
+.state-pill {
+  min-height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 26px;
+  font-weight: 850;
+  margin-top: 32px;
+}
+.state-pill.blue { background: var(--blue-soft); color: var(--blue); }
+.state-pill.red { background: var(--red-soft); color: var(--red); }
+.state-pill.green { background: var(--green-soft); color: var(--green); }
+
+
+
+.workflow-map{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:620px;}
+.workflow-map li{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.045);border-radius:999px;padding:8px 12px;color:#d8d8dd;font-size:12px;}
+.workflow-map strong{color:#fff;font-weight:900;}
+@media (max-width:700px){.workflow-map{grid-template-columns:1fr;}}
+
+/* Workflow: tienda -> dashboard */
+.shops-workflow{background:var(--black);color:var(--white);padding:128px 0 150px;overflow:hidden;}
+.workflow-intro{display:grid;grid-template-columns:minmax(280px,460px) 1fr;gap:54px;align-items:end;margin-bottom:54px;}
+.workflow-intro p{color:#d8d8dd;max-width:720px;}
+.workflow-shell{display:grid;gap:34px;}
+.workflow-panel{position:relative;display:grid;grid-template-columns:minmax(280px,400px) 1fr;gap:42px;min-height:620px;border-radius:32px;background:#fff;color:var(--black);padding:42px;box-shadow:0 28px 70px rgba(0,0,0,.28);overflow:hidden;perspective:1400px;}
+.workflow-panel,.workflow-stage,.workflow-copy,.workflow-tabs,.workflow-visual{will-change:transform,opacity,filter;}
+.workflow-panel{transform-origin:center 70%;}
+.workflow-stage{perspective:1400px;}
+.workflow-stage .shop-ui-window,.workflow-stage .dashboard-shell{will-change:transform,opacity,filter;}
+.workflow-tabs{grid-column:1/-1;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-bottom:4px;}
+.workflow-tab{border:0;border-radius:12px;background:#eeeeee;color:#737377;padding:13px 18px;font-weight:800;font-size:15px;}
+.workflow-tab.is-active{background:#fff;color:#16161d;box-shadow:inset 0 0 0 1px #16161d;}
+.workflow-copy{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-height:440px;}
+.workflow-copy h3{font-size:34px;line-height:1.08;margin:0 0 22px;color:#101828;}
+.workflow-copy p{font-size:22px;line-height:1.22;color:#070c0f;margin:0 0 30px;}
+.workflow-copy .primary-small{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;border-radius:10px;background:#16161d;color:#fff;font-weight:800;}
+.workflow-stage{position:relative;min-height:460px;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d;}
+.workflow-visual,.dashboard-result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;transform-style:preserve-3d;}
+.dashboard-result{visibility:hidden;opacity:0;}
+.workflow-view-link,.dashboard-back{position:absolute;right:12px;bottom:0;z-index:6;border:0;border-radius:14px;background:#f8f8f8;color:#737377;min-height:52px;padding:0 22px;display:inline-flex;align-items:center;gap:12px;font-size:22px;font-weight:800;cursor:pointer;overflow:hidden;}
+.workflow-view-link svg,.dashboard-back svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2.4;}
+.dashboard-ripple{position:absolute;width:20px;height:20px;border-radius:999px;background:rgba(237,28,39,.22);right:40px;bottom:18px;transform:scale(0);pointer-events:none;}
+.dashboard-back{left:12px;right:auto;background:#16161d;color:#fff;font-size:16px;bottom:0;}
+.workflow-panel.is-dashboard-open .workflow-view-link{background:#16161d;color:#fff;box-shadow:0 16px 36px rgba(0,0,0,.18);}
+.workflow-action-label{display:inline-block;white-space:nowrap;}
+.workflow-panel.is-dashboard-open .dashboard-back{display:none!important;}
+.workflow-copy [data-copy-title],.workflow-copy [data-copy-body]{will-change:transform,opacity;}
+.workflow-panel.is-dashboard-open .workflow-copy h3{color:#16161d;}
+.workflow-panel.is-dashboard-open .workflow-copy p{color:#34343a;}
+
+.shop-ui-window,.dashboard-shell{width:min(760px,100%);border-radius:22px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.14);overflow:hidden;border:1px solid #e7e7ea;}
+.ui-browser{height:38px;background:#fff;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid #eee;font-size:11px;color:#737377;}
+.ui-url{background:#f4f4f5;border-radius:999px;padding:6px 14px;min-width:210px;color:#56565b;}
+.store-hero{min-height:164px;background:#16161d;display:grid;grid-template-columns:220px 1fr;align-items:center;gap:22px;padding:28px;color:#fff;position:relative;overflow:hidden;}
+.store-hero img{position:absolute;right:0;top:0;width:48%;height:100%;object-fit:cover;opacity:.9;}
+.store-logo{position:relative;font-size:46px;font-weight:900;line-height:.82;letter-spacing:-3px;z-index:2;}
+.store-tag{position:relative;z-index:2;font-weight:800;}
+.store-grid{background:#f6f6f6;padding:28px 70px 46px;}
+.store-grid h4{margin:0 0 15px;font-size:18px;color:#222;border-bottom:1px solid #ddd;padding-bottom:10px;font-weight:500;}
+.mini-products{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.mini-product{background:#fff;border-radius:10px;padding:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);font-size:10px;color:#555;text-align:center;}
+.mini-product img{width:100%;height:70px;object-fit:cover;border-radius:8px;background:#dedede;margin-bottom:6px;}
+.category-view .store-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:36px 50px 46px;}
+.category-card{height:172px;border-radius:14px;overflow:hidden;position:relative;background:#15151c;color:#fff;display:flex;align-items:flex-end;justify-content:center;padding:18px;font-weight:800;}
+.category-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.78;}
+.category-card span{position:relative;z-index:1;background:rgba(0,0,0,.52);border-radius:999px;padding:7px 13px;}
+.product-detail{background:#f8f8f9;padding:28px;display:grid;grid-template-columns:70px 1fr 220px;gap:20px;align-items:start;}
+.thumbs{display:grid;gap:10px;}.thumbs img{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#ddd;}.main-product-img{height:270px;border-radius:18px;object-fit:cover;width:100%;background:#ddd;}.product-info h4{font-size:18px;margin:0 0 8px;}.price{font-weight:900;color:#16161d;margin-bottom:12px;}.price del{color:#999;font-weight:500;margin-right:8px;}.product-option{font-size:11px;color:#444;margin:8px 0;}.store-btn{display:inline-flex;border-radius:8px;background:#16161d;color:#fff;padding:9px 16px;font-size:11px;font-weight:800;margin-top:10px;}.cart-view{background:#f9f9f9;padding:36px 38px 42px;}.checkout-steps{display:flex;align-items:center;justify-content:center;gap:64px;margin:0 0 28px;}.checkout-steps span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#a2a2a5;color:#fff;font-weight:800;font-size:13px;position:relative;}.checkout-steps span:first-child{background:#16161d;}.cart-view h4{font-size:24px;margin:0 0 18px;border-bottom:2px solid #16161d;display:inline-block;}.cart-row{display:grid;grid-template-columns:80px 1fr 100px 110px 120px;gap:12px;align-items:center;border-bottom:1px solid #cfcfd4;padding:16px 0;font-size:12px;}.cart-row img{width:50px;height:58px;object-fit:cover;border-radius:6px;}.cart-continue{float:right;margin-top:28px;background:#16161d;color:#fff;border-radius:7px;padding:13px 90px;font-weight:800;font-size:12px;}
+.dashboard-shell{background:#f4f4f5;display:grid;grid-template-columns:130px 1fr;min-height:440px;}
+.dash-sidebar{background:#16161d;color:#d8d8dd;padding:22px 12px;font-size:10px;}.dash-logo{color:#fff;font-weight:900;font-size:18px;margin:0 0 18px 8px;}.dash-nav{display:grid;gap:7px}.dash-nav span{border-radius:8px;padding:8px 10px}.dash-nav .active{background:#2c2c34;color:#fff;}.dash-main{background:#f6f6f7;}.dashboard-topbar{height:44px;background:#fff;border-bottom:1px solid #e4e4e6;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:11px;color:#737377;}.dashboard-card{margin:18px;background:#fff;border:1px solid #e2e2e5;border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06);}.dashboard-card h4{font-size:18px;margin:0 0 14px;color:#16161d;}.identity-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;}.field{border:1px solid #dedee2;border-radius:9px;padding:10px 12px;background:#fff;font-size:11px;color:#737377;}.field strong{display:block;color:#16161d;margin-top:5px;font-size:13px;}.domain-list{margin-top:16px;border:1px solid #e4e4e7;border-radius:12px;overflow:hidden;}.domain-row{display:grid;grid-template-columns:1fr 80px 32px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid #eee;font-size:11px;}.domain-row:last-child{border-bottom:0}.status-ok{color:#008f5a;font-weight:900;}.success-toast{display:inline-flex;align-items:center;gap:8px;background:#eafaf0;color:#008f5a;border-radius:10px;padding:10px 14px;font-weight:800;font-size:12px;margin-bottom:12px;}.table-list{border:1px solid #e5e5e8;border-radius:14px;overflow:hidden;background:#fff;font-size:11px;}.table-head,.table-row{display:grid;grid-template-columns:70px 1.4fr 1fr 80px 60px;gap:8px;align-items:center;padding:11px 12px;}.table-head{background:#f1f1f3;font-weight:900;color:#16161d}.table-row:nth-child(odd){background:#fafafa}.action-dot{width:24px;height:24px;border-radius:999px;background:#16161d;display:inline-grid;place-items:center;color:#fff;}.client-preview{margin-top:16px;background:#fff;border-radius:16px;padding:13px;border:1px solid #e5e5e8;}.client-preview h5{margin:0 0 10px;font-size:12px;}.client-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.client-tile{height:92px;border-radius:12px;overflow:hidden;position:relative;background:#16161d;color:#fff;font-size:10px;display:grid;place-items:end center;padding:8px;}.client-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72}.client-tile span{position:relative}.product-admin-form{display:grid;grid-template-columns:190px 1fr;gap:20px}.product-admin-form img{width:100%;height:230px;object-fit:cover;border-radius:16px;background:#ddd;}.product-admin-form .form-lines{display:grid;gap:10px}.product-admin-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.discount-flag{position:absolute;right:28px;top:72px;background:#ed1c27;color:#fff;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:900;transform:rotate(8deg);}.cart-dashboard-layout{display:grid;grid-template-columns:150px 1fr;gap:14px}.filter-card{background:#fff;border-radius:12px;padding:12px;border:1px solid #e7e7ea;font-size:11px}.filter-card strong{display:block;margin-bottom:10px}.filter-pill{display:block;background:#f5f5f6;border-radius:8px;padding:7px 9px;margin:6px 0;color:#737377}.cart-dashboard-table{font-size:10px}.cart-dashboard-table .table-head,.cart-dashboard-table .table-row{grid-template-columns:70px 1.3fr 70px 56px 70px 78px 40px}.cart-dashboard-table .approved,.cart-dashboard-table .delivered{font-weight:900;color:#008f5a}.dashboard-result[hidden]{display:none!important;}
+@media (max-width:900px){.workflow-intro,.workflow-panel{grid-template-columns:1fr}.workflow-panel{padding:24px;min-height:auto}.workflow-copy{min-height:auto}.workflow-stage{min-height:540px}.workflow-view-link,.dashboard-back{position:relative;right:auto;left:auto;bottom:auto;margin-top:18px}.dashboard-shell{grid-template-columns:1fr}.dash-sidebar{display:none}.store-hero,.product-detail,.cart-dashboard-layout{grid-template-columns:1fr}.workflow-tabs{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap}.workflow-tab{white-space:nowrap}.cart-row{grid-template-columns:50px 1fr 70px}.cart-row span:nth-child(n+4){display:none}.identity-form,.product-admin-form,.product-admin-form .form-row{grid-template-columns:1fr}.workflow-copy h3{font-size:30px}.workflow-copy p{font-size:18px}}
+
+.features { padding-bottom: 20px; }
+.simple-card { min-height: 165px; }
+.audience { padding-bottom: 80px; }
+.audience-card { min-height: 260px; }
+.audience-card a { display: inline-flex; margin-top: 26px; color: var(--red); font-weight: 850; }
+.comparison { padding-bottom: 120px; }
+.compare-table { background: var(--white); border: 1px solid var(--gray-line); border-radius: 28px; box-shadow: var(--shadow-soft); padding: 44px 50px; }
+.compare-head,
+.compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+.compare-head { padding-bottom: 26px; border-bottom: 1px solid var(--gray-line); }
+.compare-head strong { font-size: 20px; }
+.compare-head strong:last-child { color: var(--red); }
+.compare-row { min-height: 58px; align-items: center; color: var(--gray-text); }
+.compare-row strong { color: var(--black); }
+
+.responsive-preview { background: var(--black); color: var(--white); padding: 120px 0 130px; }
+.responsive-grid { display: grid; grid-template-columns: 1fr 360px; gap: 90px; align-items: center; }
+.phone-mockup {
+  width: 310px;
+  min-height: 650px;
+  margin-inline: auto;
+  background: var(--white);
+  color: var(--black);
+  border-radius: 34px;
+  box-shadow: 1px 30px 72px rgba(0,0,0,.35);
+  padding: 0 24px 26px;
+  overflow: hidden;
+}
+.phone-top { height: 64px; margin-inline: -24px; background: var(--black); color: var(--white); padding: 24px; font-weight: 850; }
+.phone-mockup h3 { font-size: 32px; line-height: 1.05; letter-spacing: -.04em; margin: 40px 0 0; }
+.phone-mockup p { color: var(--gray-text); line-height: 1.42; margin: 20px 0 28px; }
+.phone-product { background: var(--gray-soft); border: 1px solid var(--gray-line); border-radius: 24px; padding: 22px; margin-top: 38px; }
+.phone-product > div { height: 72px; border-radius: 18px; margin-bottom: 22px; }
+.phone-product strong,
+.phone-product span { display: block; }
+.phone-product span { color: var(--red); font-weight: 850; margin-top: 8px; }
+.phone-product button { background: var(--red); margin-top: 20px; }
+
+.faq { padding-bottom: 112px; }
+.faq-list { max-width: 900px; }
+details {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: 22px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+summary {
+  cursor: pointer;
+  padding: 26px 32px;
+  font-size: 20px;
+  font-weight: 850;
+  list-style: none;
+}
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; float: right; color: var(--red); }
+details[open] summary::after { content: "–"; }
+details p { color: var(--gray-text); line-height: 1.45; margin: 0; padding: 0 32px 30px; }
+
+.final-cta { background: var(--white); padding: 20px 0 140px; }
+.cta-band {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 80px;
+  background: var(--black);
+  border-radius: 36px;
+  padding: 72px;
+  color: var(--white);
+  box-shadow: var(--shadow);
+}
+.cta-band h2 { max-width: 720px; color: var(--white); font-size: clamp(38px, 4vw, 56px); line-height: 1.08; }
+.cta-band p { max-width: 650px; color: #d8d8dd; font-size: 20px; line-height: 1.45; margin-top: 28px; }
+.cta-actions { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 38px; }
+.cta-checklist { background: #24242c; border: 1px solid #3a3a44; border-radius: 28px; padding: 34px; align-self: center; }
+.cta-checklist h3 { margin: 0 0 24px; font-size: 22px; }
+.cta-checklist ul { list-style: none; padding: 0; margin: 0; }
+.cta-checklist li { position: relative; padding-left: 24px; margin-bottom: 18px; color: #d8d8dd; font-weight: 700; }
+.cta-checklist li::before { content: ""; position: absolute; left: 0; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+
+.site-footer { background: var(--black); color: var(--white); padding: 80px 0 40px; }
+.footer-top { display: grid; grid-template-columns: 1fr 260px; gap: 80px; align-items: center; }
+.footer-top h2 { max-width: 560px; font-size: clamp(42px, 5vw, 68px); line-height: 1.02; letter-spacing: -.05em; margin: 0; }
+.footer-top p { max-width: 540px; color: #d8d8dd; font-size: 22px; line-height: 1.45; }
+.footer-mark { display: grid; place-items: center; width: 180px; height: 180px; border-radius: 28px; background: var(--white); color: var(--black); font-size: 88px; font-weight: 900; box-shadow: inset -12px -12px 0 var(--red); justify-self: end; }
+.footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding-top: 72px; }
+.footer-grid strong { display: block; margin-bottom: 18px; }
+.footer-grid a { display: block; color: #d8d8dd; padding: 8px 0; }
+.footer-grid a:hover { color: var(--white); }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.12); margin-top: 60px; padding-top: 28px; display: flex; justify-content: space-between; gap: 24px; color: #d8d8dd; font-size: 14px; }
+
+.reveal-up,
+.reveal-scale,
+.reveal-group > *,
+.section-head,
+.compare-table,
+.admin-mockup,
+.cta-band,
+.phone-mockup { will-change: transform, opacity; }
+
+@media (max-width: 1120px) {
+  .desktop-nav, .nav-actions { display: none; }
+  .menu-button { display: block; margin-left: auto; }
+  .mobile-nav { display: none; }
+  body.nav-open .mobile-nav { display: block; }
+  .hero-grid, .responsive-grid, .cta-band, .footer-top { grid-template-columns: 1fr; }
+  .hero-visual { min-height: auto; }
+  .browser-card { width: min(578px, 100%); }
+  .trust-strip, .cards-grid.three, .cards-grid.six, .step-grid, .footer-grid { grid-template-columns: repeat(2, 1fr); }
+  .trust-strip article + article { border-left: 0; padding-left: 0; }
+  .admin-mockup { grid-template-columns: 1fr; }
+  .admin-mockup aside { display: none; }
+  .footer-mark { justify-self: start; }
+}
+
+@media (max-width: 760px) {
+  .container { width: min(100% - 32px, var(--container)); }
+  .site-header, .nav-shell { height: 78px; }
+  .mobile-nav { inset-top: 78px; }
+  .brand { min-width: auto; }
+  .brand-copy { display: none; }
+  .hero { padding: 58px 0 72px; min-height: auto; }
+  .hero-title { font-size: clamp(40px, 13vw, 54px); }
+  .hero-lead { font-size: 18px; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { width: 100%; }
+  .browser-card { border-radius: 24px; min-height: 720px; }
+  .shop-preview { padding: 24px; }
+  .storefront-card { width: 100%; }
+  .checkout-card, .dashboard-card { position: static; width: 100%; margin-top: 18px; }
+  .approved-alert { left: 24px; right: 24px; bottom: 18px; }
+  .trust-strip, .cards-grid.three, .cards-grid.six, .step-grid, .footer-grid, .kpi-row, .admin-bottom { grid-template-columns: 1fr; }
+  .trust-strip { padding: 28px; gap: 24px; }
+  .section-head { padding-top: 84px; }
+  .section-head h2 { font-size: 38px; }
+  .cards-grid { padding-bottom: 80px; }
+  .product-live, .responsive-preview { padding: 86px 0; }
+  .admin-content { padding: 30px 22px; }
+  .orders-table div { grid-template-columns: 1fr; gap: 7px; padding: 12px 0; border-bottom: 1px solid var(--gray-line); }
+  .compare-head, .compare-row { grid-template-columns: 1fr; gap: 10px; }
+  .compare-table { padding: 28px; }
+  .phone-mockup { width: 100%; max-width: 310px; }
+  .cta-band { padding: 36px 24px; border-radius: 28px; }
+  .footer-bottom { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* Restored sections requested from Figma nodes 1:5828, 15:2801 and 1:5448 */
+/* Figma node 1:5828 - benefits section */
+.figma-benefits { padding: 116px 0 126px; overflow: hidden; }
+.figma-benefits-head { text-align: center; margin: 0 auto; }
+.figma-benefits-layout { position: relative; display: grid; grid-template-columns: 1fr 1.08fr; gap: 72px; align-items: center; margin-top: 72px; }
+.benefit-stack { position: relative; z-index: 2; display: grid; gap: 34px; }
+.benefit-node { position: relative; display: grid; justify-items: center; text-align: center; min-height: 300px; padding: 26px 32px 36px; background: var(--white); border: 1px solid rgba(22,22,29,.08); border-radius: 28px; box-shadow: 8px 12px 0 rgba(22,22,29,.08); }
+.benefit-icon { display: grid; place-items: center; width: 100px; height: 100px; border-radius: 24px; background: var(--red-soft); margin-bottom: 24px; }
+.benefit-icon svg { width: 64px; height: 64px; }
+.benefit-node h3 { margin: 0; color: var(--black); font-size: 28px; line-height: 1.1; }
+.benefit-node p { margin: 16px 0 0; max-width: 360px; color: var(--gray-text); font-size: 17px; line-height: 1.42; }
+.benefit-connectors { position: absolute; left: 260px; top: 42px; width: 620px; height: 980px; z-index: 0; pointer-events: none; }
+.benefit-path { fill: none; stroke: rgba(22,22,29,.18); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 12 12; }
+.benefit-orbits { position: absolute; inset: 0 auto auto 120px; width: 520px; height: 100%; pointer-events: none; }
+.benefit-orbits .orbit { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(237,28,39,.16), transparent 66%); filter: blur(.1px); }
+.benefit-orbits .one { width: 420px; height: 320px; top: 20px; left: 10px; }
+.benefit-orbits .two { width: 390px; height: 300px; top: 390px; left: 34px; }
+.benefit-orbits .three { width: 410px; height: 265px; bottom: 48px; left: 0; }
+.payment-visual { position: relative; min-height: 740px; }
+.store-browser { width: min(545px, 100%); min-height: 760px; background: var(--white); border: 1px solid var(--gray-line); border-radius: 30px; box-shadow: var(--shadow-strong); overflow: hidden; }
+.store-browser-top { padding: 34px 34px 28px; background: var(--black); color: var(--white); }
+.store-browser-top small { display: block; color: rgba(255,255,255,.68); font-weight: 700; margin-bottom: 12px; }
+.store-browser-top h3 { margin: 0; font-size: 28px; line-height: 1.08; }
+.store-payment-area { padding: 36px; }
+.store-payment-area h4 { margin: 0 0 24px; font-size: 24px; }
+.checkout-lines { display: grid; gap: 12px; margin-bottom: 30px; }
+.checkout-lines span { height: 14px; border-radius: 999px; background: var(--gray-line); }
+.checkout-lines span:nth-child(1) { width: 86%; }
+.checkout-lines span:nth-child(2) { width: 70%; }
+.checkout-lines span:nth-child(3) { width: 52%; }
+.payment-method-preview { padding: 22px; border-radius: 24px; background: var(--gray-soft); }
+.method-preview-grid, .payment-logo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.method-mini, .payment-logo { display: grid; place-items: center; min-height: 52px; border-radius: 14px; background: var(--white); border: 1px solid var(--gray-line); color: var(--black); font-weight: 900; font-size: 13px; }
+.payment-card { position: absolute; right: 0; bottom: 18px; width: 362px; padding: 28px; border-radius: 28px; background: var(--white); border: 1px solid var(--gray-line); box-shadow: var(--shadow-strong); }
+.payment-card-header { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+.brand-chip { display: grid; place-items: center; min-width: 104px; height: 46px; border-radius: 12px; background: var(--black); color: var(--white); font-weight: 900; }
+.payment-card h3 { margin: 0; color: var(--black); font-size: 19px; }
+.payment-logo-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.payment-logo { min-height: 44px; font-size: 11px; }
+.payment-logo.redmark { color: var(--red); }
+.payment-logo.cash { color: var(--green); }
+.payment-logo.paypal { color: #00457c; }
+
+/* Figma node 15:2801 - banner */
+.shops-banner-section { background: var(--gray-bg); padding: 70px 0 118px; }
+.figma-banner { position: relative; overflow: hidden; min-height: 435px; border-radius: 20px; background: var(--black); color: var(--white); box-shadow: 8px 12px 0 rgba(22,22,29,.12); isolation: isolate; }
+.figma-banner::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(90deg, rgba(22,22,29,.86) 0%, rgba(22,22,29,.58) 36%, rgba(22,22,29,.08) 74%), url('https://www.figma.com/api/mcp/asset/6a27a1da-b629-4683-b2d3-6fabf78c3c3d'); background-size: cover; background-position: center; transform: scale(1.02); z-index: -2; }
+.figma-banner::after { content: ''; position: absolute; width: 700px; height: 500px; right: -320px; top: -320px; border-radius: 50%; background: rgba(237,28,39,.22); transform: rotate(-4deg); z-index: -1; }
+.banner-copy { position: relative; z-index: 2; width: min(590px, calc(100% - 80px)); padding: 66px 0 60px 78px; }
+.banner-copy h2 { margin: 0; max-width: 440px; font-size: clamp(34px, 3.4vw, 46px); line-height: 1.12; color: var(--white); }
+.banner-copy p { margin: 22px 0 32px; max-width: 578px; font-size: clamp(18px, 2vw, 24px); line-height: 1.25; color: var(--white); }
+.banner-copy .btn { width: 214px; justify-content: center; }
+.banner-whatsapp { position: absolute; top: 22px; left: 656px; display: grid; place-items: center; width: 203px; height: 195px; border-radius: 999px; background: rgba(255,255,255,.5); backdrop-filter: blur(2px); }
+.banner-whatsapp img { width: 162px; height: 162px; object-fit: contain; }
+.banner-product-card { position: absolute; right: -22px; top: 32px; width: 370px; min-height: 210px; border-radius: 18px; background: rgba(255,255,255,.88); color: var(--black); transform: rotate(10deg); box-shadow: 0 20px 52px rgba(0,0,0,.22); padding: 24px; }
+.banner-product-card .product-photo { height: 92px; width: 128px; border-radius: 14px; background: linear-gradient(135deg, #f7ccd0, #f7f7f8); margin-bottom: 16px; }
+.banner-product-card strong { display: block; font-size: 18px; }
+.banner-product-card span { display: block; margin-top: 8px; color: var(--red); font-weight: 900; }
+
+/* Figma node 1:5448 - seller carousel */
+.seller-carousel-section { overflow: hidden; background: var(--white); padding: 120px 0 132px; }
+.seller-carousel { display: grid; gap: 34px; }
+.seller-carousel-header { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+.seller-controls { display: flex; gap: 14px; align-items: center; }
+.seller-arrow { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 999px; border: 1px solid var(--gray-line); background: var(--white); color: var(--black); font-size: 26px; cursor: pointer; transition: transform .2s ease, background .2s ease, color .2s ease; }
+.seller-arrow:hover { transform: translateY(-2px); background: var(--black); color: var(--white); }
+.seller-viewport { position: relative; min-height: 1040px; }
+.seller-track { position: relative; min-height: 1040px; }
+.seller-slide { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 1fr); gap: 15px; align-items: center; padding: 24px; border-radius: 28px; background: var(--gray-soft); box-shadow: 8px 12px 0 rgba(22,22,29,.16); opacity: 0; pointer-events: none; transform: translateX(40px); }
+.seller-slide.is-active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+.seller-visual { position: relative; min-height: 900px; overflow: hidden; border-radius: 24px; }
+.seller-person { position: absolute; left: 22px; top: 110px; width: 520px; height: 640px; border-radius: 50%; background: radial-gradient(circle at 48% 50%, rgba(237,28,39,.18), rgba(237,28,39,.06) 46%, transparent 70%); }
+.seller-person::before { content: ''; position: absolute; inset: 58px 42px 20px; border-radius: 42% 42% 48% 48%; background-size: cover; background-position: center; filter: drop-shadow(0 18px 34px rgba(0,0,0,.18)); }
+.seller-slide:nth-child(1) .seller-person::before { background-image: url('https://www.figma.com/api/mcp/asset/e5f7a785-4c72-4058-b5d9-be119a83d82b'); }
+.seller-slide:nth-child(2) .seller-person::before { background-image: url('https://www.figma.com/api/mcp/asset/a60308fa-b8dc-4be8-85fc-aaae795dee5b'); }
+.seller-slide:nth-child(3) .seller-person::before { background-image: url('https://www.figma.com/api/mcp/asset/b3e2a5a0-0c57-475b-901f-4ef026d4efe7'); }
+.seller-slide:nth-child(4) .seller-person::before { background-image: url('https://www.figma.com/api/mcp/asset/53f27e07-66a1-4002-bb69-16377eab08f7'); }
+.seller-slide:nth-child(5) .seller-person::before { background-image: url('https://www.figma.com/api/mcp/asset/23f23288-5d1f-4044-abad-b804c5e31be5'); }
+.seller-slide:nth-child(6) .seller-person::before { background-image: url('https://www.figma.com/api/mcp/asset/5fb52d0d-3c0d-4435-bddc-13958838ad23'); }
+.seller-pop { position: absolute; left: 18px; top: 170px; width: 210px; border-radius: 14px; background: rgba(255,255,255,.78); backdrop-filter: blur(10px); box-shadow: 0 10px 24px rgba(0,0,0,.18); padding: 16px; }
+.seller-pop .tiny-browser { height: 18px; border-radius: 6px 6px 0 0; background: var(--black); margin: -16px -16px 12px; }
+.seller-pop .tiny-image { width: 64px; height: 64px; border-radius: 10px; background: linear-gradient(135deg, #f7ccd0, #e9eaee); float: left; margin-right: 12px; }
+.seller-pop strong { display: block; font-size: 12px; margin-top: 4px; }
+.seller-pop span { display: block; font-size: 11px; color: var(--red); font-weight: 900; margin-top: 6px; }
+.seller-check { position: absolute; left: 84px; top: 116px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #59c74f; color: #fff; font-weight: 900; box-shadow: 0 8px 18px rgba(0,0,0,.2); }
+.seller-content h2 { margin: 0; font-size: clamp(34px, 3.1vw, 48px); line-height: 1.12; color: var(--black); }
+.seller-content > p { margin: 22px 0 22px; font-size: clamp(19px, 2vw, 28px); line-height: 1.25; color: var(--black); }
+.seller-content > p strong { font-style: italic; }
+.seller-list { display: grid; gap: 0; }
+.seller-item { display: grid; grid-template-columns: 80px 1fr; gap: 24px; align-items: center; min-height: 96px; padding: 12px 5px; border-radius: 0; }
+.seller-item.is-highlight { background: var(--red-soft); }
+.seller-icon { display: grid; place-items: center; width: 80px; height: 80px; }
+.seller-icon svg { width: 42px; height: 42px; fill: none; stroke: var(--black); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.seller-item h3 { margin: 0 0 6px; font-size: 18px; line-height: 1.25; color: var(--black); }
+.seller-item p { margin: 0; font-size: 18px; line-height: 1.34; color: var(--black); }
+.seller-dots { display: flex; justify-content: center; gap: 12px; }
+.seller-dot { width: 12px; height: 12px; border-radius: 50%; border: 0; background: #c7c7cc; cursor: pointer; }
+.seller-dot.is-active { background: var(--red); }
+
+@media (max-width: 1120px) {
+  .desktop-nav, .nav-actions { display: none; }
+  .menu-button { display: block; margin-left: auto; }
+  .mobile-nav { display: none; }
+  body.nav-open .mobile-nav { display: block; }
+  .hero-grid, .responsive-grid, .cta-band, .footer-top { grid-template-columns: 1fr; }
+  .hero-visual { min-height: auto; }
+  .browser-card { width: min(578px, 100%); }
+  .trust-strip, .cards-grid.three, .cards-grid.six, .step-grid, .footer-grid { grid-template-columns: repeat(2, 1fr); }
+  .trust-strip article + article { border-left: 0; padding-left: 0; }
+  .admin-mockup { grid-template-columns: 1fr; }
+  .admin-mockup aside { display: none; }
+  .footer-mark { justify-self: start; }
+}
+
+@media (max-width: 760px) {
+  .container { width: min(100% - 32px, var(--container)); }
+  .site-header, .nav-shell { height: 78px; }
+  .mobile-nav { inset-top: 78px; }
+  .brand { min-width: auto; }
+  .brand-copy { display: none; }
+  .hero { padding: 58px 0 72px; min-height: auto; }
+  .hero-title { font-size: clamp(40px, 13vw, 54px); }
+  .hero-lead { font-size: 18px; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .btn { width: 100%; }
+  .browser-card { border-radius: 24px; min-height: 720px; }
+  .shop-preview { padding: 24px; }
+  .storefront-card { width: 100%; }
+  .checkout-card, .dashboard-card { position: static; width: 100%; margin-top: 18px; }
+  .approved-alert { left: 24px; right: 24px; bottom: 18px; }
+  .trust-strip, .cards-grid.three, .cards-grid.six, .step-grid, .footer-grid, .kpi-row, .admin-bottom { grid-template-columns: 1fr; }
+  .trust-strip { padding: 28px; gap: 24px; }
+  .section-head { padding-top: 84px; }
+  .section-head h2 { font-size: 38px; }
+  .cards-grid { padding-bottom: 80px; }
+  .product-live, .responsive-preview { padding: 86px 0; }
+  .admin-content { padding: 30px 22px; }
+  .orders-table div { grid-template-columns: 1fr; gap: 7px; padding: 12px 0; border-bottom: 1px solid var(--gray-line); }
+  .compare-head, .compare-row { grid-template-columns: 1fr; gap: 10px; }
+  .compare-table { padding: 28px; }
+  .phone-mockup { width: 100%; max-width: 310px; }
+  .cta-band { padding: 36px 24px; border-radius: 28px; }
+  .footer-bottom { flex-direction: column; }
+}
+
+/* Node 348:6024 replacement for previous generic audience cards */
+.node-usecase { position: relative; overflow: hidden; padding: 112px 0 132px; background: #dedede; }
+.node-usecase::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 28% 34%, rgba(237,28,39,.16), transparent 26%), linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,0)); pointer-events: none; }
+.node-usecase-heading { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr minmax(280px, 520px); gap: 64px; align-items: end; margin-bottom: 56px; }
+.node-usecase-heading h2 { max-width: 720px; margin: 0; font-size: clamp(40px, 4.4vw, 62px); line-height: .98; letter-spacing: -.055em; color: var(--black); }
+.node-usecase-heading h2 em { display: block; font-style: italic; font-family: var(--font); font-weight: 950; letter-spacing: -.045em; }
+.node-usecase-heading p { margin: 0; font-size: clamp(18px, 1.8vw, 24px); line-height: 1.34; color: #171717; text-align: right; }
+.node-usecase-stage { position: relative; z-index: 1; }
+.node-usecase-hero { position: relative; display: grid; grid-template-columns: minmax(360px, 596px) 1fr; gap: 34px; align-items: center; min-height: 392px; margin-bottom: 44px; padding: 0 46px; border-radius: 28px; background: #fff; box-shadow: 6px 7px 1.75px rgba(0,0,0,.25); overflow: visible; }
+.node-laptop-wrap { position: relative; min-height: 400px; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; }
+.node-red-glow { position: absolute; width: 340px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(237,28,39,.42), rgba(237,28,39,.08) 52%, transparent 72%); filter: blur(14px); transform: translate(38px, 18px); }
+.node-laptop { position: relative; z-index: 2; width: min(596px, 100%); max-height: 420px; object-fit: contain; filter: drop-shadow(1px 7px 8px rgba(0,0,0,.37)); transform-origin: center bottom; }
+.node-laptop-badge { position: absolute; z-index: 3; left: 44px; bottom: 46px; border-radius: 999px; background: #16161d; color: #fff; padding: 10px 15px; font-size: 13px; font-weight: 900; box-shadow: 0 16px 34px rgba(0,0,0,.2); }
+.node-copy-card { position: relative; z-index: 2; text-align: right; justify-self: end; max-width: 620px; padding: 34px 0; }
+.node-copy-card p { margin: 0; color: #000; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.34; }
+.node-copy-card strong { font-style: italic; font-weight: 950; }
+.node-copy-actions { display: flex; justify-content: flex-end; align-items: center; gap: 22px; margin-top: 28px; }
+.node-text-link { color: var(--black); font-weight: 900; text-decoration: none; border-bottom: 2px solid var(--red); }
+.node-benefit-rail { display: grid; grid-template-columns: repeat(4, minmax(260px, 1fr)); gap: 18px; will-change: transform; }
+.node-benefit-card { position: relative; min-height: 402px; border-radius: 30px; background: #161617; color: #fff; border: 1px solid #000; padding: 33px; overflow: hidden; box-shadow: 0 18px 42px rgba(0,0,0,.18); transform-style: preserve-3d; }
+.node-benefit-card::after { content: ''; position: absolute; width: 180px; height: 180px; right: -90px; bottom: -90px; border-radius: 50%; background: rgba(191,6,21,.18); transition: transform .35s ease; }
+.node-benefit-card.is-active::after, .node-benefit-card:hover::after { transform: scale(1.85); }
+.node-card-icon { display: grid; place-items: center; width: 47px; height: 44px; border-radius: 6px; background: #bf0615; margin-bottom: 26px; }
+.node-card-icon svg { width: 29px; height: 29px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.node-benefit-card h3 { position: relative; z-index: 1; margin: 0 0 20px; color: #fff; font-size: 21px; line-height: 1.25; font-style: italic; letter-spacing: -.02em; }
+.node-benefit-card ul { position: relative; z-index: 1; margin: 0; padding-left: 22px; color: #f6f6f8; font-size: 17px; line-height: 1.34; }
+.node-benefit-card li + li { margin-top: 17px; }
+.node-usecase-dots { display: flex; justify-content: center; gap: 10px; margin-top: 32px; }
+.node-usecase-dots span { width: 10px; height: 10px; border-radius: 999px; background: #aaa; transition: width .25s ease, background .25s ease; }
+.node-usecase-dots span.is-active { width: 28px; background: #737377; }
+@media (max-width: 1100px) { .node-usecase-heading, .node-usecase-hero { grid-template-columns: 1fr; } .node-usecase-heading p, .node-copy-card { text-align: left; } .node-copy-actions { justify-content: flex-start; } .node-benefit-rail { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; } .node-benefit-card { min-width: 310px; scroll-snap-align: start; } }
+@media (max-width: 700px) { .node-usecase { padding: 84px 0 96px; } .node-usecase-hero { padding: 24px; min-height: 0; } .node-laptop-wrap { min-height: 280px; } .node-copy-card p { font-size: 19px; } .node-copy-actions { flex-direction: column; align-items: flex-start; } }
+
+/* ePayco Shops professional redesign layer - aligned with 2025 brand manual. */
+:root {
+  --brand-red: #ED1C27;
+  --brand-black: #1D1D1D;
+  --ink: #16161D;
+  --ink-soft: #34343A;
+  --muted: #6F7177;
+  --paper: #FFFFFF;
+  --surface: #F7F7F8;
+  --surface-2: #EFEFF1;
+  --line: #DFE0E4;
+  --blue: #0082C4;
+  --green: #009056;
+  --amber: #F8991D;
+  --shadow: 0 24px 70px rgba(22,22,29,.10);
+  --shadow-soft: 0 12px 34px rgba(22,22,29,.08);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.site-header {
+  height: 84px;
+  background: rgba(29,29,29,.97);
+  backdrop-filter: blur(14px);
+}
+.nav-shell { height: 84px; }
+.brand-mark { width: 40px; height: 40px; }
+.desktop-nav { gap: 28px; font-size: 14px; font-weight: 700; }
+.btn {
+  border-radius: 10px;
+  font-weight: 850;
+  letter-spacing: -.01em;
+  box-shadow: none;
+}
+.btn-primary {
+  background: var(--brand-black);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(29,29,29,.16);
+}
+.btn-primary:hover { background: #050509; }
+.btn-light, .btn-white {
+  border-color: var(--line);
+  box-shadow: 0 10px 24px rgba(22,22,29,.06);
+}
+.eyebrow {
+  color: var(--brand-red);
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.hero {
+  min-height: auto;
+  padding: 86px 0 88px;
+  background:
+    linear-gradient(180deg, #fff 0%, #fff 62%, #f6f6f7 100%);
+}
+.hero-grid {
+  grid-template-columns: minmax(0, .94fr) minmax(480px, 1.06fr);
+  gap: 58px;
+}
+.hero-title {
+  max-width: 760px;
+  font-size: clamp(44px, 4.7vw, 68px);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+.hero-lead {
+  max-width: 650px;
+  color: var(--ink-soft);
+  font-size: clamp(18px, 1.45vw, 21px);
+  line-height: 1.48;
+}
+.hero-note {
+  color: var(--muted);
+  font-size: 15px;
+}
+.hero-visual {
+  min-height: 610px;
+  align-items: center;
+}
+.browser-card {
+  width: min(640px, 100%);
+  min-height: 570px;
+  border: 1px solid rgba(29,29,29,.08);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fff, #f5f5f6);
+  box-shadow: 0 30px 70px rgba(22,22,29,.14);
+}
+.browser-top {
+  border-bottom: 1px solid var(--line);
+  background: rgba(255,255,255,.86);
+}
+.shop-preview {
+  min-height: 500px;
+  padding: 30px 30px 82px;
+}
+.storefront-card,
+.checkout-card,
+.dashboard-card,
+.pop-card {
+  border: 1px solid rgba(29,29,29,.08);
+  box-shadow: var(--shadow-soft);
+}
+.storefront-card {
+  border-radius: 18px;
+}
+.checkout-card {
+  right: 28px;
+  top: 216px;
+  border-radius: 16px;
+}
+.dashboard-card {
+  left: 32px;
+  bottom: 52px;
+  border-radius: 16px;
+  background: var(--brand-black);
+}
+.approved-alert {
+  left: 34px;
+  right: 34px;
+  bottom: 24px;
+  border: 1px solid rgba(0,144,86,.18);
+  border-radius: 999px;
+  background: #f1fbf6;
+  color: #006d44;
+  box-shadow: 0 14px 32px rgba(0,144,86,.12);
+}
+
+.trust-strip-section {
+  background: #f6f6f7;
+  padding: 0 0 42px;
+}
+.trust-strip {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 42px rgba(22,22,29,.07);
+}
+.trust-strip article strong { color: var(--ink); }
+.trust-strip article span { color: var(--muted); }
+
+.section-head {
+  padding-top: 98px;
+}
+.section-head h2 {
+  letter-spacing: -.035em;
+}
+.section-head p {
+  color: var(--muted);
+}
+
+.figma-benefits {
+  padding: 92px 0 112px;
+  background: #fff;
+}
+.figma-benefits-layout {
+  grid-template-columns: minmax(300px, 420px) 1fr;
+  gap: 46px;
+  margin-top: 52px;
+}
+.benefit-connectors,
+.benefit-orbits { display: none; }
+.benefit-stack {
+  gap: 14px;
+}
+.benefit-node.node-benefit-card {
+  min-height: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink);
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(22,22,29,.06);
+}
+.benefit-node.node-benefit-card::after { display: none; }
+.benefit-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--brand-black);
+}
+.benefit-node h3 {
+  color: var(--ink);
+  font-size: 20px;
+}
+.benefit-node p {
+  color: var(--muted);
+  font-size: 15px;
+}
+.payment-visual {
+  min-height: 560px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(237,28,39,.10), transparent 34%),
+    linear-gradient(145deg, #fafafa, #f0f1f3);
+  box-shadow: var(--shadow);
+}
+.store-browser,
+.payment-card {
+  border: 1px solid rgba(29,29,29,.08);
+  box-shadow: var(--shadow-soft);
+}
+
+.value.section-gray,
+.how.section-gray,
+.comparison.section-gray {
+  background: #f6f6f7;
+}
+.feature-card,
+.step-card,
+.compare-table {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 14px 36px rgba(22,22,29,.06);
+}
+.feature-card p,
+.step-card p,
+.compare-row span { color: var(--muted); }
+
+.shops-banner-section {
+  padding: 84px 0 104px;
+  background: #f6f6f7;
+}
+.figma-banner {
+  min-height: 430px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    linear-gradient(120deg, rgba(29,29,29,.96), rgba(29,29,29,.90)),
+    #1d1d1d;
+  color: #fff;
+  box-shadow: 0 28px 70px rgba(22,22,29,.16);
+  overflow: hidden;
+}
+.figma-banner::before {
+  opacity: .18;
+  background: radial-gradient(circle at 78% 20%, rgba(237,28,39,.65), transparent 32%);
+}
+.banner-copy {
+  max-width: 560px;
+  padding: 58px 0 58px 58px;
+}
+.banner-copy h2 {
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.02;
+  letter-spacing: -.04em;
+}
+.banner-copy p {
+  color: rgba(255,255,255,.78);
+  font-size: 19px;
+  line-height: 1.48;
+}
+.banner-product-card,
+.banner-whatsapp {
+  box-shadow: 0 20px 48px rgba(0,0,0,.22);
+}
+.figma-banner .btn-primary {
+  background: #fff;
+  color: var(--brand-black);
+  box-shadow: 0 16px 34px rgba(0,0,0,.24);
+}
+.figma-banner .btn-primary:hover {
+  background: #f2f2f2;
+}
+
+.shops-workflow {
+  padding: 106px 0 122px;
+  background: var(--brand-black);
+}
+.workflow-intro {
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 560px);
+  gap: 34px;
+  align-items: end;
+}
+.workflow-intro p {
+  color: rgba(255,255,255,.72);
+  font-size: 18px;
+}
+.shops-workflow .dark-head h2,
+.responsive-preview .dark-head h2,
+.final-cta h2 {
+  color: #fff;
+}
+.shops-workflow .dark-head p,
+.responsive-preview .dark-head p {
+  color: rgba(255,255,255,.72);
+}
+.workflow-map {
+  display: none;
+}
+.workflow-panel {
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 32px 80px rgba(0,0,0,.24);
+}
+.workflow-tabs {
+  gap: 8px;
+  padding: 5px;
+  border-radius: 16px;
+  background: #f3f3f4;
+}
+.workflow-tab {
+  border-radius: 12px;
+  font-size: 13px;
+}
+.workflow-copy h3 {
+  font-size: clamp(28px, 3vw, 42px);
+  letter-spacing: -.035em;
+}
+.workflow-copy p {
+  color: var(--ink-soft);
+  font-size: 19px;
+  line-height: 1.45;
+}
+.workflow-view-link,
+.dashboard-back {
+  border-radius: 12px;
+  font-size: 15px;
+  min-height: 48px;
+}
+
+.features.section-gray {
+  background: #fff;
+}
+
+.seller-carousel-section {
+  padding: 98px 0 104px;
+  background: #fff;
+}
+.seller-carousel-header {
+  align-items: center;
+}
+.seller-viewport,
+.seller-track {
+  min-height: 720px;
+}
+.seller-slide {
+  grid-template-columns: minmax(320px, 500px) 1fr;
+  gap: 34px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #f7f7f8;
+  box-shadow: 0 22px 56px rgba(22,22,29,.10);
+}
+.seller-visual {
+  min-height: 652px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.64), rgba(255,255,255,0)),
+    #ececef;
+}
+.seller-person {
+  left: 0;
+  top: 70px;
+  width: 500px;
+  height: 610px;
+}
+.seller-pop {
+  left: 28px;
+  top: 112px;
+  background: rgba(255,255,255,.90);
+}
+.seller-check {
+  left: 118px;
+  top: 72px;
+}
+.seller-content h2 {
+  max-width: 620px;
+  letter-spacing: -.035em;
+}
+.seller-content > p {
+  max-width: 720px;
+  color: var(--ink-soft);
+  font-size: clamp(18px, 1.6vw, 23px);
+  line-height: 1.42;
+}
+.seller-list {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.seller-item {
+  grid-template-columns: 48px 1fr;
+  gap: 14px;
+  min-height: auto;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+.seller-item.is-highlight {
+  border-color: rgba(237,28,39,.22);
+  background: #fff6f7;
+}
+.seller-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f1f1f2;
+}
+.seller-icon svg {
+  width: 26px;
+  height: 26px;
+}
+.seller-item h3 {
+  font-size: 15px;
+}
+.seller-item p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.node-usecase {
+  padding: 104px 0 116px;
+  background:
+    linear-gradient(180deg, #f4f4f5 0%, #ffffff 100%);
+}
+.node-usecase::before {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(237,28,39,.10), transparent 30%),
+    radial-gradient(circle at 90% 22%, rgba(0,130,196,.08), transparent 28%);
+}
+.node-usecase-heading {
+  grid-template-columns: minmax(0, 680px) minmax(280px, 470px);
+  gap: 48px;
+  margin-bottom: 38px;
+}
+.node-usecase-heading h2 {
+  letter-spacing: -.045em;
+}
+.node-usecase-heading p {
+  color: var(--ink-soft);
+  font-size: clamp(17px, 1.35vw, 20px);
+  line-height: 1.48;
+}
+.node-usecase-hero {
+  min-height: 410px;
+  grid-template-columns: minmax(330px, 540px) 1fr;
+  gap: 44px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 40px 48px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, #f3f3f4 0%, #fff 47%, #fff 100%);
+  box-shadow: 0 26px 64px rgba(22,22,29,.10);
+  overflow: hidden;
+}
+.node-laptop-wrap {
+  min-height: 330px;
+  justify-content: flex-start;
+}
+.node-red-glow {
+  width: 290px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(237,28,39,.20), rgba(237,28,39,.04) 58%, transparent 76%);
+  filter: blur(18px);
+}
+.node-laptop {
+  width: min(520px, 100%);
+  filter: drop-shadow(0 20px 28px rgba(22,22,29,.18));
+}
+.node-laptop-badge {
+  left: 22px;
+  bottom: 30px;
+  background: #fff;
+  color: var(--brand-black);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 28px rgba(22,22,29,.12);
+}
+.node-copy-card {
+  max-width: 590px;
+  justify-self: end;
+  padding: 0;
+  text-align: left;
+}
+.node-copy-card::before {
+  content: "Modelo ideal";
+  display: inline-flex;
+  margin-bottom: 16px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #fff1f2;
+  color: var(--brand-red);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.node-copy-card p {
+  color: var(--ink);
+  font-size: clamp(24px, 2.4vw, 34px);
+  line-height: 1.18;
+  letter-spacing: -.025em;
+}
+.node-copy-actions {
+  justify-content: flex-start;
+  gap: 18px;
+}
+.node-text-link {
+  padding-bottom: 4px;
+  color: var(--brand-black);
+}
+.node-benefit-rail {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.node-benefit-card {
+  min-height: 310px;
+  border: 1px solid rgba(29,29,29,.10);
+  border-radius: 18px;
+  background: var(--brand-black);
+  box-shadow: 0 16px 42px rgba(22,22,29,.12);
+  padding: 26px;
+}
+.node-benefit-card::after {
+  background: rgba(237,28,39,.12);
+}
+.node-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--brand-red);
+}
+.node-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.node-benefit-card h3 {
+  font-size: 19px;
+  font-style: normal;
+  letter-spacing: -.01em;
+}
+.node-benefit-card ul {
+  color: rgba(255,255,255,.78);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.responsive-preview {
+  background:
+    radial-gradient(circle at 78% 20%, rgba(237,28,39,.16), transparent 30%),
+    var(--brand-black);
+}
+.phone-mockup {
+  border-radius: 32px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.24);
+}
+.faq-list details {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.cta-band {
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(237,28,39,.16), transparent 28%),
+    var(--brand-black);
+  box-shadow: 0 28px 70px rgba(22,22,29,.18);
+}
+.cta-checklist {
+  border-radius: 18px;
+  background: rgba(255,255,255,.06);
+}
+
+@media (max-width: 1120px) {
+  .hero-grid,
+  .figma-benefits-layout,
+  .workflow-intro,
+  .seller-slide,
+  .node-usecase-heading,
+  .node-usecase-hero,
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-visual { min-height: auto; }
+  .seller-viewport,
+  .seller-track,
+  .seller-visual { min-height: 680px; }
+  .node-copy-card { justify-self: start; }
+  .node-benefit-rail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .site-header,
+  .nav-shell { height: 76px; }
+  .mobile-nav { inset-top: 76px; }
+  .hero { padding: 54px 0 64px; }
+  .hero-title { font-size: clamp(38px, 11vw, 52px); }
+  .hero-lead { font-size: 17px; }
+  .browser-card {
+    min-height: auto;
+    border-radius: 20px;
+  }
+  .shop-preview { padding: 20px; }
+  .checkout-card,
+  .dashboard-card,
+  .approved-alert {
+    position: static;
+    margin-top: 14px;
+    width: 100%;
+  }
+  .section-head { padding-top: 72px; }
+  .figma-benefits,
+  .shops-banner-section,
+  .seller-carousel-section,
+  .node-usecase { padding: 72px 0 84px; }
+  .banner-copy { padding: 34px 24px; }
+  .figma-banner { min-height: 0; }
+  .workflow-panel { padding: 20px; }
+  .seller-viewport,
+  .seller-track,
+  .seller-visual { min-height: 0; }
+  .seller-slide {
+    position: relative;
+    padding: 18px;
+  }
+  .seller-slide:not(.is-active) { display: none !important; }
+  .seller-person { position: relative; top: auto; left: auto; width: 100%; height: 360px; }
+  .seller-pop,
+  .seller-check { display: none; }
+  .seller-list,
+  .node-benefit-rail { grid-template-columns: 1fr; }
+  .node-usecase-hero {
+    padding: 24px;
+    gap: 24px;
+    border-radius: 20px;
+  }
+  .node-laptop-wrap { min-height: 240px; }
+  .node-copy-card p { font-size: 22px; }
+  .node-copy-actions { flex-direction: column; align-items: stretch; }
+  .node-copy-actions .btn,
+  .node-copy-actions .node-text-link { width: 100%; text-align: center; }
+}
+
+/* Figma content aligned inside the original mother structure. */
+.figma-benefits {
+  background:
+    linear-gradient(180deg, #fff 0%, #fff 72%, #f7f7f8 100%);
+}
+.figma-benefits-head h2 {
+  max-width: 1010px;
+  margin-inline: auto;
+}
+.figma-benefits-head p strong {
+  color: var(--ink);
+  font-style: italic;
+}
+.figma-benefits-layout {
+  grid-template-columns: minmax(330px, 430px) minmax(560px, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+.benefit-stack {
+  gap: 40px;
+  padding-top: 22px;
+}
+.benefit-node.node-benefit-card {
+  min-height: 206px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid rgba(22,22,29,.08);
+  box-shadow: 8px 0 0 rgba(22,22,29,.18), 0 20px 42px rgba(22,22,29,.08);
+  padding: 24px 30px 28px;
+  isolation: isolate;
+}
+.benefit-node.node-benefit-card::before {
+  content: "";
+  position: absolute;
+  inset: auto auto -42px -54px;
+  width: 220px;
+  height: 190px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(237,28,39,.22), rgba(237,28,39,.08) 50%, transparent 72%);
+  filter: blur(2px);
+  z-index: -1;
+}
+.benefit-node.node-benefit-card::after {
+  content: "";
+  position: absolute;
+  right: -68px;
+  top: 50%;
+  width: 68px;
+  border-top: 3px dotted rgba(237,28,39,.85);
+  transform: translateY(-50%);
+}
+.benefit-node:nth-child(1)::after {
+  top: 0;
+  height: 134px;
+  border-right: 2px solid rgba(237,28,39,.6);
+}
+.benefit-node:nth-child(3)::after {
+  top: 100%;
+  height: 88px;
+  border-right: 2px solid rgba(237,28,39,.6);
+}
+.benefit-icon {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 14px;
+  background: #fff;
+  border-radius: 18px;
+}
+.benefit-icon circle,
+.benefit-icon rect,
+.benefit-icon path:first-child {
+  stroke: #16161d;
+  stroke-width: 2.5;
+}
+.benefit-icon svg {
+  width: 66px;
+  height: 66px;
+}
+.benefit-node h3 {
+  font-size: 20px;
+  line-height: 1.14;
+}
+.benefit-node p {
+  max-width: 318px;
+  font-size: 14px;
+  line-height: 1.38;
+  color: #16161d;
+}
+.benefit-connectors {
+  left: 314px;
+  top: 52px;
+  width: 520px;
+  height: 820px;
+  z-index: 1;
+}
+.benefit-path {
+  stroke: rgba(237,28,39,.72);
+  stroke-width: 2;
+  stroke-dasharray: 5 7;
+}
+.benefit-orbits {
+  left: 0;
+  width: 500px;
+}
+.payment-visual {
+  min-height: 760px;
+  padding-top: 86px;
+}
+.payment-visual > .store-browser:not(.figma-checkout),
+.payment-visual > .payment-card:not(.figma-media-card) {
+  display: none;
+}
+.figma-checkout {
+  position: relative;
+  width: min(548px, 100%);
+  min-height: 650px;
+  border-radius: 10px;
+  border: 1px solid #d6d6d6;
+  background: #fff;
+  box-shadow: 18px 24px 42px rgba(22,22,29,.16);
+  overflow: visible;
+  z-index: 2;
+}
+.checkout-head {
+  display: grid;
+  grid-template-columns: 52px 1fr 20px 56px 22px;
+  gap: 14px;
+  align-items: center;
+  min-height: 96px;
+  padding: 22px 28px;
+  background: #1d1d1d;
+  color: #fff;
+}
+.merchant-logo {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 4px;
+  background: #dff7de;
+  color: #1d1d1d;
+  font-size: 11px;
+  font-weight: 900;
+}
+.checkout-head h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #fff;
+}
+.checkout-head p {
+  margin: 5px 0 0;
+  color: rgba(255,255,255,.86);
+  font-size: 14px;
+}
+.checkout-info {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #2098e8;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+.checkout-lang {
+  display: grid;
+  place-items: center;
+  height: 34px;
+  border-radius: 5px;
+  background: #5d5d61;
+  color: #fff;
+  font-weight: 800;
+}
+.checkout-close {
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+}
+.checkout-data {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 18px 28px;
+  border-bottom: 5px solid #d8d8d8;
+  font-size: 14px;
+}
+.checkout-data a {
+  margin-left: auto;
+  color: #2ca8ff;
+  font-weight: 700;
+}
+.figma-checkout .store-payment-area {
+  padding: 22px 28px 136px;
+}
+.figma-checkout .store-payment-area h4 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+.checkout-method-list {
+  display: grid;
+  gap: 10px;
+}
+.checkout-method {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  column-gap: 14px;
+  align-items: center;
+  min-height: 62px;
+  padding: 12px 16px;
+  border: 1px solid #d9d9dc;
+  border-radius: 4px;
+  background: #fff;
+}
+.checkout-method strong {
+  font-size: 15px;
+  color: #1d1d1d;
+}
+.checkout-method small {
+  grid-column: 2;
+  color: #3c3c3f;
+  font-size: 12px;
+}
+.method-icon {
+  grid-row: 1 / span 2;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #1d1d1d;
+  border-radius: 4px;
+}
+.method-icon.bank {
+  border-radius: 0;
+  clip-path: polygon(50% 0,100% 35%,100% 48%,0 48%,0 35%);
+  background:#1d1d1d;
+}
+.method-icon.wallet {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+}
+.checkout-total {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: 8px;
+  padding: 20px 28px 24px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 -14px 28px rgba(22,22,29,.10);
+}
+.checkout-total strong {
+  font-size: 28px;
+  color: #000;
+}
+.checkout-total strong span {
+  margin-left: 3px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.checkout-total a {
+  color: #2ca8ff;
+  font-size: 17px;
+}
+.figma-media-card {
+  right: 18px;
+  bottom: 18px;
+  width: 338px;
+  padding: 20px;
+  border-radius: 18px;
+  z-index: 4;
+}
+.figma-media-card .brand-chip {
+  min-width: 100px;
+  height: auto;
+  background: transparent;
+  color: #1d1d1d;
+  font-size: 26px;
+  font-style: italic;
+}
+.figma-media-card .payment-card-header {
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.figma-media-card .payment-card-header h3 {
+  font-size: 12px;
+}
+.figma-media-card .payment-logo-grid {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.figma-media-card .payment-logo {
+  min-height: 43px;
+  border-radius: 8px;
+  font-size: 10px;
+  box-shadow: 0 1px 4px rgba(22,22,29,.08);
+}
+.seller-carousel-header .section-head {
+  padding-top: 0;
+}
+.seller-slide {
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: 8px 10px 0 rgba(22,22,29,.16), 0 26px 58px rgba(22,22,29,.08);
+}
+.seller-slide::before {
+  content: "";
+  position: absolute;
+  inset: 18px auto auto 34px;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(237,28,39,.11), transparent 68%);
+  pointer-events: none;
+}
+.seller-list {
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.seller-item {
+  min-height: 112px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  transform-origin: center;
+  transition: border-color .22s ease, box-shadow .22s ease, background .22s ease;
+}
+.seller-item.is-highlight {
+  border-color: rgba(237,28,39,.22);
+  background: #fff1f2;
+  box-shadow: 0 12px 28px rgba(237,28,39,.08);
+}
+.seller-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: #f3f3f4;
+}
+.seller-icon svg {
+  width: 30px;
+  height: 30px;
+}
+.seller-item h3 {
+  font-size: 15px;
+}
+.seller-item p {
+  font-size: 14px;
+  color: var(--muted);
+}
+@media (max-width: 1120px) {
+  .figma-benefits-layout { grid-template-columns: 1fr; }
+  .payment-visual { min-height: 760px; padding-top: 0; }
+  .figma-checkout { margin-inline: auto; }
+  .figma-media-card { right: max(12px, calc((100% - 560px) / 2)); }
+}
+@media (max-width: 760px) {
+  .benefit-stack { gap: 22px; }
+  .benefit-node.node-benefit-card::after,
+  .benefit-connectors { display: none; }
+  .benefit-node.node-benefit-card { min-height: auto; }
+  .payment-visual { min-height: auto; }
+  .figma-checkout { width: 100%; min-height: 0; }
+  .checkout-head { grid-template-columns: 44px 1fr 18px; }
+  .checkout-lang, .checkout-close { display: none; }
+  .figma-checkout .store-payment-area { padding-bottom: 130px; }
+  .figma-media-card { position: relative; right: auto; bottom: auto; width: 100%; margin-top: 18px; }
+  .seller-list { grid-template-columns: 1fr; }
+}
+
+/* Final interaction pass: Figma-aligned nodes without replacing the mother structure. */
+.banner-whatsapp {
+  overflow: visible;
+  background: rgba(255,255,255,.18);
+  border-radius: 50%;
+}
+.banner-whatsapp::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.26);
+  box-shadow: 0 20px 46px rgba(0,0,0,.22);
+}
+.banner-whatsapp::after {
+  content: "";
+  position: absolute;
+  inset: 35px;
+  border: 7px solid #fff;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 999px #08c444;
+  clip-path: polygon(0 0,100% 0,100% 100%,42% 100%,28% 86%,18% 100%,19% 74%,0 74%);
+}
+.wa-business-mark {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 52px;
+  font-weight: 950;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(0,0,0,.12);
+}
+.figma-banner .banner-product-card {
+  animation: productCardDrift 5.8s ease-in-out infinite;
+}
+@keyframes productCardDrift {
+  0%, 100% { transform: rotate(10deg) translate3d(0,0,0); }
+  50% { transform: rotate(7deg) translate3d(-8px,10px,0); }
+}
+.figma-benefits .benefit-connectors {
+  display: block;
+  z-index: 3;
+  overflow: visible;
+}
+.figma-benefits .benefit-path {
+  stroke: rgba(237,28,39,.78);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 8 8;
+  filter: drop-shadow(0 2px 0 rgba(237,28,39,.12));
+}
+.seller-carousel-section {
+  min-height: calc(100vh - 84px);
+  padding: 34px 0 42px;
+}
+.seller-carousel {
+  gap: 20px;
+}
+.seller-carousel-header .section-head {
+  padding-top: 0;
+}
+.seller-carousel-header .section-head h2 {
+  font-size: clamp(32px, 3.55vw, 52px);
+  line-height: .98;
+}
+.seller-carousel-header .section-head p {
+  margin-top: 20px;
+  max-width: 780px;
+}
+.seller-viewport,
+.seller-track {
+  min-height: min(590px, calc(100vh - 330px));
+}
+.seller-slide {
+  grid-template-columns: minmax(280px, 485px) 1fr;
+  gap: 28px;
+  padding: 22px;
+}
+.seller-visual {
+  min-height: min(532px, calc(100vh - 390px));
+}
+.seller-person {
+  top: 18px;
+  height: 530px;
+}
+.seller-pop { top: 74px; }
+.seller-check { top: 34px; }
+.seller-content h2 {
+  font-size: clamp(30px, 3vw, 48px);
+}
+.seller-content > p {
+  margin: 16px 0 18px;
+  font-size: clamp(16px, 1.35vw, 21px);
+}
+.seller-list {
+  gap: 10px;
+}
+.seller-item {
+  min-height: 92px;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.seller-icon {
+  width: 44px;
+  height: 44px;
+}
+.seller-icon svg {
+  width: 27px;
+  height: 27px;
+}
+.seller-item h3 {
+  font-size: 14px;
+  line-height: 1.18;
+}
+.seller-item p {
+  font-size: 12px;
+  line-height: 1.22;
+}
+.shops-tutorial {
+  position: relative;
+  overflow: hidden;
+  padding: 92px 0 116px;
+  background: #151518;
+  color: #fff;
+}
+.shops-tutorial::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(237,28,39,.20), transparent 30%),
+    radial-gradient(circle at 88% 15%, rgba(255,255,255,.10), transparent 24%);
+  pointer-events: none;
+}
+.tutorial-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 42px;
+  text-align: center;
+}
+.tutorial-copy {
+  max-width: 1000px;
+}
+.tutorial-copy .eyebrow {
+  color: #fff;
+}
+.tutorial-copy h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(34px, 4.5vw, 60px);
+  line-height: 1.08;
+  letter-spacing: -.045em;
+}
+.tutorial-video {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(632px, 100%);
+  aspect-ratio: 632 / 280;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 24px;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(0,0,0,.34);
+}
+.tutorial-video-surface {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.03)),
+    radial-gradient(circle at 50% 44%, rgba(237,28,39,.18), transparent 42%),
+    #202025;
+}
+.tutorial-play {
+  position: relative;
+  z-index: 1;
+  width: 86px;
+  height: 86px;
+  color: #ed1c27;
+  filter: drop-shadow(0 18px 24px rgba(0,0,0,.22));
+}
+.tutorial-play svg {
+  width: 100%;
+  height: 100%;
+}
+.tutorial-play circle {
+  fill: #fff;
+  stroke: rgba(255,255,255,.55);
+  stroke-width: 2;
+}
+.tutorial-play path {
+  fill: #ed1c27;
+}
+.tutorial-video-meta {
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+  z-index: 1;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  color: rgba(255,255,255,.86);
+  font-size: 13px;
+  font-weight: 800;
+}
+.node-usecase[data-node-usecase="348:6024"] {
+  display: none;
+}
+@media (max-width: 1120px) {
+  .seller-carousel-section { min-height: 0; padding: 72px 0 84px; }
+  .seller-viewport,
+  .seller-track,
+  .seller-visual { min-height: 680px; }
+  .seller-slide { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .banner-whatsapp { position: relative; left: auto; top: auto; width: 132px; height: 126px; margin: 22px 0 0 24px; }
+  .wa-business-mark { width: 68px; height: 68px; font-size: 38px; }
+  .banner-whatsapp::after { inset: 24px; border-width: 5px; }
+  .seller-viewport,
+  .seller-track,
+  .seller-visual { min-height: 0; }
+  .shops-tutorial { padding: 72px 0 88px; }
+  .tutorial-shell { gap: 28px; }
+}
+
+/* Visibility safety layer: sections must never remain blank if GSAP or image loading is delayed. */
+section,
+.section-head,
+.reveal-up,
+.reveal-scale,
+.reveal-group > *,
+.compare-table,
+.admin-mockup,
+.cta-band,
+.phone-mockup,
+[data-workflow-panel],
+.node-usecase,
+.node-usecase-heading > *,
+[data-usecase-hero],
+[data-usecase-card],
+.figma-benefits,
+.shops-banner-section,
+.seller-carousel-section {
+  visibility: visible;
+}
+img { background-color: #f4f4f4; }
+.node-laptop,
+.shop-ui-window,
+.dashboard-shell,
+.figma-banner,
+.benefit-media-card,
+.phone-mockup {
+  min-height: 1px;
+}
+.dashboard-result[hidden],
+.dashboard-result[aria-hidden="true"],
+.seller-slide[aria-hidden="true"] { display: none !important; }
+.seller-slide.is-active { display: grid !important; visibility: visible !important; opacity: 1; }
+
+
+/* Persistent scroll visibility: reveal animations should not collapse content after the user reaches it. */
+.scroll-persist-visible,
+section:not([hidden]) {
+  min-height: 1px;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido principal</a>
+<header class="site-header" data-elevate="">
+<div class="nav-shell">
+<a aria-label="ePayco Shops inicio" class="brand" href="#top">
+<span aria-hidden="true" class="brand-mark">
+<svg aria-label="ePayco" role="img" viewbox="0 0 48 48">
+<rect fill="#1D1D1D" height="48" rx="12" width="48"></rect>
+<path d="M15 35V13h13.2c5.1 0 8.8 3.5 8.8 8.2 0 4.9-3.7 8.4-8.9 8.4H22v5.4h-7Zm7-11.1h5.3c1.9 0 3.1-1.1 3.1-2.8 0-1.6-1.2-2.7-3.1-2.7H22v5.5Z" fill="#fff"></path>
+<path d="M33.2 34.9a4.1 4.1 0 1 0 0-8.2 4.1 4.1 0 0 0 0 8.2Z" fill="#ED1C27"></path>
+</svg>
+</span>
+<span class="brand-copy">ePayco <strong>Shops</strong></span>
+</a>
+<nav aria-label="Navegación principal" class="desktop-nav">
+<a href="#beneficios">Beneficios</a>
+<a href="#funciona">Cómo funciona</a>
+<a href="#producto">Producto</a>
+<a href="#casos">Casos</a>
+<a href="#faq">FAQ</a>
+</nav>
+<div class="nav-actions">
+<a class="btn btn-ghost" href="#login">Inicia sesión</a>
+<a class="btn btn-primary" href="#registro">Regístrate gratis</a>
+</div>
+<button aria-controls="mobileNav" aria-expanded="false" class="menu-button" type="button">
+<span></span><span></span><span></span>
+<span class="sr-only">Abrir menú</span>
+</button>
+</div>
+<nav aria-label="Navegación móvil" class="mobile-nav" id="mobileNav">
+<a href="#beneficios">Beneficios</a>
+<a href="#funciona">Cómo funciona</a>
+<a href="#producto">Producto</a>
+<a href="#casos">Casos</a>
+<a href="#faq">FAQ</a>
+<a class="btn btn-primary" href="#registro">Regístrate gratis</a>
+</nav>
+</header>
+<main class="page" id="main" tabindex="-1">
+<section aria-labelledby="hero-title" class="hero section-white" id="top">
+<div class="container hero-grid">
+<div class="hero-copy">
+<span class="eyebrow reveal-up">EPAYCO SHOPS</span>
+<h1 class="hero-title reveal-up" id="hero-title">Tu tienda online lista para vender y cobrar con ePayco</h1>
+<p class="hero-lead reveal-up">Crea una tienda profesional, publica tus productos, recibe pagos en línea y gestiona pedidos desde una experiencia simple, segura y conectada al ecosistema ePayco.</p>
+<div class="hero-actions reveal-up">
+<a class="btn btn-primary btn-large" href="#registro">Regístrate gratis</a>
+<a class="btn btn-light btn-large" href="#funciona">Conoce más</a>
+</div>
+<p class="hero-note reveal-up">Ideal para emprendedores, negocios locales y marcas que quieren vender online sin desarrollo complejo.</p>
+</div>
+<div aria-label="Vista conceptual de tienda online, checkout y panel de ventas" class="hero-visual">
+<div class="browser-card floating-card">
+<div class="browser-top">
+<span class="browser-dot"></span>
+<span class="browser-dot"></span>
+<span class="browser-dot"></span>
+<span class="browser-url">mitienda.epayco.shop</span>
+<span class="secure-pill">Pago seguro</span>
+</div>
+<div class="shop-preview">
+<div class="storefront-card">
+<div class="store-header">
+<div>
+<strong>Casa Nativa</strong>
+<small>Inicio · Catálogo · Contacto</small>
+</div>
+<span class="mini-logo">P</span>
+</div>
+<div class="product-image"></div>
+<div aria-hidden="true" class="product-thumbs">
+<span></span><span></span><span></span>
+</div>
+<div class="product-row">
+<div>
+<strong>Kit café premium</strong>
+<span>$89.900 COP</span>
+</div>
+<button type="button">Comprar</button>
+</div>
+</div>
+<div class="checkout-card pop-card">
+<h3>Checkout</h3>
+<p>Total a pagar</p>
+<strong>$89.900</strong>
+<div class="pay-methods"><span>PSE</span><span>Tarjeta</span></div>
+<button type="button">Pagar ahora</button>
+</div>
+<div class="dashboard-card pop-card">
+<p>Ventas hoy</p>
+<strong data-compact="true" data-counter="" data-prefix="$" data-target="1800000">$0</strong>
+<div aria-hidden="true" class="bars"><span></span><span></span><span></span><span></span></div>
+</div>
+</div>
+<div class="approved-alert"><span></span> Venta aprobada: pedido listo para gestionar</div>
+</div>
+</div>
+</div>
+</section>
+<section aria-label="Resumen de beneficios" class="trust-strip-section">
+<div class="container trust-strip reveal-group">
+<article>
+<strong>Tienda online</strong>
+<span>publicada rápido</span>
+</article>
+<article>
+<strong>Pagos ePayco</strong>
+<span>integrados</span>
+</article>
+<article>
+<strong>Checkout seguro</strong>
+<span>para comprar</span>
+</article>
+<article>
+<strong>Pedidos</strong>
+<span>en un solo lugar</span>
+</article>
+</div>
+</section><section aria-labelledby="figma-benefits-title" class="figma-benefits section-white" id="beneficios">
+<div class="container section-head figma-benefits-head">
+<span class="eyebrow">BENEFICIOS SHOPS</span>
+<h2 id="figma-benefits-title">Conoce los beneficios de iniciar tu tienda con nosotros</h2>
+<p>Aquí encontrarás <strong>beneficios</strong> que te brinda nuestra solución de ecommerce para que puedas <strong>vender al máximo.</strong></p>
+</div>
+<div class="container figma-benefits-layout">
+<div aria-hidden="true" class="benefit-orbits"><span class="orbit one"></span><span class="orbit two"></span><span class="orbit three"></span></div>
+<svg aria-hidden="true" class="benefit-connectors" viewbox="0 0 650 1190">
+<path class="benefit-path" d="M16 54 C 210 48, 300 18, 590 120"></path>
+<path class="benefit-path" d="M92 475 C 250 430, 360 470, 590 580"></path>
+<path class="benefit-path" d="M92 960 C 250 1016, 360 1050, 590 1040"></path>
+</svg>
+<div aria-label="Beneficios principales de ePayco Shops" class="benefit-stack reveal-group">
+<article class="benefit-node node-benefit-card">
+<div aria-hidden="true" class="benefit-icon"><svg viewbox="0 0 64 64"><circle cx="32" cy="32" fill="#fff" r="24"></circle><circle cx="32" cy="32" fill="none" r="18" stroke="#16161D" stroke-width="3"></circle><path d="M32 18v28M24 26c0-4 3.4-6.5 8.2-6.5 4.5 0 7.8 2.4 7.8 6.1 0 8.2-16 3.4-16 11 0 4.2 3.4 6.8 8.5 6.8 4.8 0 8.4-2.4 8.4-6.6" fill="none" stroke="#16161D" stroke-linecap="round" stroke-width="3.5"></path></svg></div>
+<h3>Ahorra en costos</h3>
+<p>Obtén ingresos extras, y ahorra hasta un 40%, en comparación con Shopify y plataformas de ecommerce.</p>
+</article>
+<article class="benefit-node node-benefit-card">
+<div aria-hidden="true" class="benefit-icon"><svg viewbox="0 0 64 64"><rect fill="#fff" height="36" rx="8" width="44" x="10" y="14"></rect><path d="M14 25h36M19 39h14M39 39h6" stroke="#16161D" stroke-linecap="round" stroke-width="4"></path><path d="M48 19l6-6" stroke="#ED1C27" stroke-linecap="round" stroke-width="4"></path></svg></div>
+<h3>Pasarela de pagos</h3>
+<p>Procesa pagos desde el instante en que tu catálogo está listo y publicado e incluyen todos los medios de pago, tarjetas de crédito, débito, incluyendo efectivo y medios de pago internacionales como SafetyPay.</p>
+</article>
+<article class="benefit-node node-benefit-card">
+<div aria-hidden="true" class="benefit-icon"><svg viewbox="0 0 64 64"><path d="M32 8l20 8v15c0 13-8 22-20 27-12-5-20-14-20-27V16l20-8Z" fill="#fff"></path><path d="M23 32l6 6 13-15" fill="none" stroke="#16161D" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path></svg></div>
+<h3>Certificaciones de seguridad</h3>
+<p>Contamos con la certificación PCI DSS Nivel 1, para prevenir la fuga de información.</p>
+</article>
+</div>
+<div aria-label="Vista de medios de pago ePayco Shops basada en el nodo de Figma" class="payment-visual reveal-scale">
+<div class="store-browser figma-checkout">
+<div class="store-browser-top checkout-head">
+<span class="merchant-logo">GOM</span>
+<div><h3>GOM NUTRITION S.A.S</h3><p>Proteína Whey Gom</p></div>
+<span class="checkout-info">i</span>
+<span class="checkout-lang">ES⌄</span>
+<span class="checkout-close">×</span>
+</div>
+<div class="checkout-data"><strong>Mis datos:</strong><span>john@email.com</span><a href="#registro">Editar mis datos</a></div>
+<div class="store-payment-area">
+<h4>Tarjetas, PSE, Efectivo & Más</h4>
+<div class="checkout-method-list">
+<article class="checkout-method"><span class="method-icon card"></span><strong>Tarjeta de crédito y/o débito</strong><small>Aceptamos Visa, MasterCard, Amex & más</small></article>
+<article class="checkout-method"><span class="method-icon bank"></span><strong>PSE</strong><small>Paga con tu cuenta de ahorros o corriente.</small></article>
+<article class="checkout-method"><span class="method-icon cash"></span><strong>Efectivo</strong><small>Genera un código y paga en puntos físicos.</small></article>
+<article class="checkout-method"><span class="method-icon wallet"></span><strong>DaviPlata</strong><small>Paga con tu saldo DaviPlata.</small></article>
+</div>
+</div>
+<div class="checkout-total"><strong>$95.000<span>COP</span></strong><a href="#registro">Ver detalle</a></div>
+</div>
+<aside aria-label="Tarjeta de medios de pago disponibles" class="payment-card figma-media-card">
+<div class="payment-card-header"><div class="brand-chip">ePayco</div><h3>+22 medios de pago</h3></div>
+<div aria-hidden="true" class="payment-logo-grid reveal-group"><span class="payment-logo redmark">MC</span><span class="payment-logo">VISA</span><span class="payment-logo">AMEX</span><span class="payment-logo">DC</span><span class="payment-logo">PSE</span><span class="payment-logo cash">EF</span><span class="payment-logo redmark">DPA</span><span class="payment-logo cash">Servi</span><span class="payment-logo">Baloto</span><span class="payment-logo paypal">PayPal</span><span class="payment-logo cash">Gana</span><span class="payment-logo redmark">Punto</span><span class="payment-logo">Codensa</span><span class="payment-logo">Safety</span><span class="payment-logo">NU</span></div>
+</aside>
+<div class="store-browser">
+<div class="store-browser-top"><small>Vista de checkout</small><h3>Tu tienda conectada a pagos desde el primer día</h3></div>
+<div class="store-payment-area">
+<h4>Elige cómo quieres pagar</h4>
+<div aria-hidden="true" class="checkout-lines"><span></span><span></span><span></span></div>
+<div class="payment-method-preview"><div class="method-preview-grid"><span class="method-mini">PSE</span><span class="method-mini">VISA</span><span class="method-mini">MC</span><span class="method-mini">AMEX</span><span class="method-mini">EFECTIVO</span><span class="method-mini">PAYPAL</span><span class="method-mini">QR</span><span class="method-mini">COD</span></div></div>
+</div>
+</div>
+<aside aria-label="Tarjeta de medios de pago disponibles" class="payment-card">
+<div class="payment-card-header"><div class="brand-chip">ePayco</div><h3>+22 medios de pago</h3></div>
+<div aria-hidden="true" class="payment-logo-grid reveal-group"><span class="payment-logo redmark">DM</span><span class="payment-logo">DV</span><span class="payment-logo">AM</span><span class="payment-logo">DC</span><span class="payment-logo">PSE</span><span class="payment-logo cash">EF</span><span class="payment-logo redmark">DPA</span><span class="payment-logo paypal">PayPal</span><span class="payment-logo">GA</span><span class="payment-logo">PR</span><span class="payment-logo">COD</span><span class="payment-logo">SP</span><span class="payment-logo">BCS</span><span class="payment-logo">BO</span><span class="payment-logo">BA</span></div>
+</aside>
+</div>
+</div>
+</section>
+<section aria-labelledby="value-title" class="value section-gray" id="transformacion">
+<div class="container section-head">
+<span class="eyebrow">REESTRUCTURACIÓN UX</span>
+<h2 id="value-title">De vender por mensajes a operar una tienda profesional</h2>
+<p>La página debe contar una historia clara: crea tu presencia online, publica productos, cobra de forma confiable y administra cada venta sin fricción técnica.</p>
+</div>
+<div class="container cards-grid three reveal-group">
+<article class="feature-card">
+<span class="number-badge blue">01</span>
+<h3>Presencia propia</h3>
+<p>Una tienda con identidad, catálogo organizado y enlace compartible para vender desde campañas, redes o WhatsApp.</p>
+</article>
+<article class="feature-card">
+<span class="number-badge red">02</span>
+<h3>Compra confiable</h3>
+<p>Checkout claro, medios de pago visibles y respaldo ePayco en el momento crítico de la conversión.</p>
+</article>
+<article class="feature-card">
+<span class="number-badge green">03</span>
+<h3>Operación simple</h3>
+<p>Pedidos, productos y pagos con una lógica fácil de entender para el comercio y su equipo.</p>
+</article>
+</div>
+</section>
+<section aria-labelledby="how-title" class="how section-gray" id="funciona">
+<div class="container section-head compact">
+<span class="eyebrow">CÓMO FUNCIONA</span>
+<h2 id="how-title">Tres pasos para pasar de idea a tienda vendiendo</h2>
+<p>La propuesta baja la promesa a un flujo tangible. Cada paso tiene una acción, un estado visible y un resultado.</p>
+</div>
+<div class="container step-grid reveal-group">
+<article class="step-card">
+<span>01</span>
+<h3>Crea tu tienda</h3>
+<p>Configura nombre, marca, datos comerciales y apariencia inicial.</p>
+<div class="state-pill blue">Setup guiado</div>
+</article>
+<article class="step-card">
+<span>02</span>
+<h3>Publica productos</h3>
+<p>Carga imágenes, precios, variantes, categorías y disponibilidad.</p>
+<div class="state-pill red">Producto activo</div>
+</article>
+<article class="step-card">
+<span>03</span>
+<h3>Cobra y gestiona</h3>
+<p>Recibe pagos con ePayco y revisa pedidos desde el panel.</p>
+<div class="state-pill green">Pago aprobado</div>
+</article>
+</div>
+</section><section aria-labelledby="shops-banner-title" class="shops-banner-section">
+<div class="container">
+<div class="figma-banner reveal-scale" data-node-ref="15:2801">
+<div class="banner-copy">
+<h2 id="shops-banner-title">Vende fácil y gestiona todo desde un solo lugar</h2>
+<p>Con ePayco Shops crea tu tienda online en minutos, administra tu catálogo, compatible. Usa WhatsApp Business como canal para gestionar pedidos y comunicarte con tus clientes desde un solo lugar.</p>
+<a class="btn btn-primary" href="#registro">Comenzar</a>
+</div>
+<div aria-hidden="true" class="banner-whatsapp"><span class="wa-business-mark">B</span></div>
+<div aria-hidden="true" class="banner-product-card"><div class="product-photo"></div><strong>Moda deportiva</strong><span>desde $50.000 COP</span></div>
+</div>
+</div>
+</section>
+<section aria-labelledby="workflow-title" class="shops-workflow" id="producto">
+<div class="container workflow-intro">
+<div class="section-head dark-head">
+<span class="eyebrow">PRODUCTO VIVO</span>
+<h2 id="workflow-title">De la tienda visible al dashboard que la administra</h2>
+</div>
+<p>Ahora cada botón <strong>Ver el dashboard</strong> conecta cada nodo base con su resultado correcto en el dashboard. La interacción muestra continuidad: lo que configuras en Shops aparece organizado para vender, administrar y tomar decisiones.</p>
+<ul aria-label="Mapa de nodos Figma usados en este flujo" class="workflow-map">
+<li><strong>15:15366</strong> → <strong>15:15341</strong></li>
+<li><strong>15:16646</strong> → <strong>15:16211</strong></li>
+<li><strong>15:15508</strong> → <strong>15:15487</strong></li>
+<li><strong>15:16137</strong> → <strong>15:15615</strong></li>
+</ul>
+</div>
+<div class="container workflow-shell">
+<article class="workflow-panel" data-dash-body="El nombre de tu empresa, el nombre de tu tienda y tus dominios quedan centralizados, editables y con estado activo para operar sin perder control." data-dash-title="Así se ve tu identidad en el dashboard" data-result-node="15:15341" data-source-node="15:15366" data-step="identity" data-store-body="Configura tu propio dominio web, como www.mimarca.com, y personaliza tu tienda con tu marca para comenzar a vender en segundos." data-store-title="Dale forma a tu tienda a tu manera" data-workflow-panel="">
+<nav aria-label="Flujo Shops" class="workflow-tabs"><button class="workflow-tab is-active">Define la identidad de tu tienda</button><button class="workflow-tab">Crea categorías</button><button class="workflow-tab">Gestiona tus productos</button><button class="workflow-tab">Panel administrativo</button></nav>
+<div class="workflow-copy" data-workflow-copy=""><h3 data-copy-title="">Dale forma a tu tienda a tu manera</h3><p data-copy-body="">Configura tu propio dominio web, como <strong>www.mimarca.com</strong>, y personaliza tu tienda con tu marca para comenzar a vender en segundos.</p><a class="primary-small" href="#registro">Comenzar</a></div>
+<div class="workflow-stage">
+<div class="workflow-visual" data-figma-source="15:15366" data-storefront-view=""><div class="shop-ui-window"><div class="ui-browser"><span class="ui-url">modabeauty.epayco.me/vende</span></div><div class="store-hero"><div class="store-logo">TU<br/>LOGO</div><div class="store-tag">Estilo que te define, moda que te empodera.</div><img alt="Banner de tienda personalizada" src="https://www.figma.com/api/mcp/asset/11b0a398-a2eb-4f24-89dd-b17bd86cf7a9"/></div><div class="store-grid"><h4>Destacados</h4><div class="mini-products"><div class="mini-product"><img alt="Producto" src="https://www.figma.com/api/mcp/asset/83a7cd25-4c03-4054-86f6-dcc9e96dbd41"/>Camiseta</div><div class="mini-product"><img alt="Producto" src="https://www.figma.com/api/mcp/asset/25874c3c-93f9-49da-880d-407ba1ceaabb"/>Bermuda</div><div class="mini-product"><img alt="Producto" src="https://www.figma.com/api/mcp/asset/75a6e3d0-c81b-46d5-bd7b-9bf95254a6cc"/>Buzo</div><div class="mini-product"><img alt="Producto" src="https://www.figma.com/api/mcp/asset/279d3627-ddcd-4ef0-9203-7bca6bec10ce"/>Chamarra</div></div></div></div></div>
+<div aria-hidden="true" class="dashboard-result" data-dashboard-view="" data-figma-result="15:15341" hidden=""><div class="dashboard-shell"><aside class="dash-sidebar"><div class="dash-logo">ePayco</div><div class="dash-nav"><span>Dashboard</span><span class="active">Shops</span><span>Pagos</span><span>Checkout</span></div></aside><main class="dash-main"><div class="dashboard-topbar"><span>Inicio / Shops</span><strong>Producción</strong></div><div class="dashboard-card"><h4>Identidad Mi Tienda</h4><div class="identity-form"><div class="field">Nombre de la empresa<strong>Colors</strong></div><div class="field">Nombre de la tienda<strong>Moda Jeans</strong></div></div><div class="domain-list"><div class="domain-row"><span>https://colors.epayco.me/vende</span><span class="status-ok">ACTIVO</span><span>✎</span></div><div class="domain-row"><span>www.mitienda.com</span><span class="status-ok">ACTIVO</span><span>🗑</span></div><div class="domain-row"><span>mitienda.com</span><span class="status-ok">ACTIVO</span><span>🗑</span></div></div></div></main></div><button aria-label="Ver mi tienda" class="dashboard-back" data-dashboard-close="" type="button">Ver mi tienda</button></div>
+<button aria-expanded="false" aria-label="Ver el dashboard" class="workflow-view-link" data-dashboard-trigger="" data-label-closed="Ver el dashboard" data-label-open="Ver mi tienda" type="button"><span class="dashboard-ripple"></span><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="workflow-action-label">Ver el dashboard</span></button>
+</div>
+</article>
+<article class="workflow-panel" data-dash-body="En el dashboard puedes crear, editar y activar categorías. El cambio se refleja en la tienda para que tus clientes naveguen por moda deportiva, elegante o casual." data-dash-title="Categorías listas para administrar" data-result-node="15:16211" data-source-node="15:16646" data-step="categories" data-store-body="Organiza tus productos en distintas categorías para facilitar la búsqueda y brindar a tus clientes una experiencia de navegación más sencilla y ordenada." data-store-title="Haz que tus productos se encuentren fácil" data-workflow-panel="">
+<nav aria-label="Flujo Shops" class="workflow-tabs"><button class="workflow-tab">Define la identidad de tu tienda</button><button class="workflow-tab is-active">Crea categorías</button><button class="workflow-tab">Gestiona tus productos</button><button class="workflow-tab">Panel administrativo</button></nav>
+<div class="workflow-copy" data-workflow-copy=""><h3 data-copy-title="">Haz que tus productos se encuentren fácil</h3><p data-copy-body="">Organiza tus productos en distintas categorías para facilitar la búsqueda y brindar a tus clientes una experiencia de navegación más sencilla y ordenada.</p><a class="primary-small" href="#registro">Comenzar</a></div>
+<div class="workflow-stage"><div class="workflow-visual" data-figma-source="15:16646" data-storefront-view=""><div class="shop-ui-window category-view"><div class="ui-browser"><span class="ui-url">modabeauty.epayco.me/categorias</span></div><div class="store-grid"><div class="category-card"><img alt="Moda deportiva" src="https://www.figma.com/api/mcp/asset/cda7e958-e154-47ad-b765-5d6c1192bc6c"/><span>Moda deportiva</span></div><div class="category-card"><img alt="Moda elegante" src="https://www.figma.com/api/mcp/asset/b315e497-ee34-44d4-81a9-d2d8a60e14e4"/><span>Moda elegante</span></div><div class="category-card"><img alt="Moda casual" src="https://www.figma.com/api/mcp/asset/caefbe49-8cc8-4323-84ed-2eeb08beaf7d"/><span>Moda casual</span></div></div></div></div><div aria-hidden="true" class="dashboard-result" data-dashboard-view="" data-figma-result="15:16211" hidden=""><div class="dashboard-shell"><aside class="dash-sidebar"><div class="dash-logo">ePayco</div><div class="dash-nav"><span>Mi tienda</span><span class="active">Categorías</span><span>Productos</span><span>Carritos y ventas</span></div></aside><main class="dash-main"><div class="dashboard-topbar"><span>Inicio / Shops / Categorías</span><strong>Agregar categorías</strong></div><div class="dashboard-card"><div class="success-toast">✓ Categoría editada exitosamente.</div><h4>Lista de categorías</h4><div class="table-list"><div class="table-head"><span>Id</span><span>Nombre</span><span>Mi Tienda</span><span>Estado</span><span>Acción</span></div><div class="table-row"><span>852456</span><span>Vestidos para mujer</span><span>colors</span><span class="status-ok">ACTIVO</span><span class="action-dot">✎</span></div><div class="table-row"><span>7413694</span><span>Zapatos</span><span>colors</span><span class="status-ok">ACTIVO</span><span class="action-dot">✎</span></div><div class="table-row"><span>528963</span><span>Vestidos para niñas</span><span>colors</span><span class="status-ok">ACTIVO</span><span class="action-dot">✎</span></div></div><div class="client-preview"><h5>Lo que verán tus clientes</h5><div class="client-grid"><div class="client-tile"><img alt="Vestidos" src="https://www.figma.com/api/mcp/asset/ed781744-8d1c-42bc-b364-6a21db20456f"/><span>Vestidos para mujer</span></div><div class="client-tile"><img alt="Niñas" src="https://www.figma.com/api/mcp/asset/0b3e9844-deed-478b-a448-00b7a95c6ff1"/><span>Vestidos para niñas</span></div><div class="client-tile"><img alt="Zapatos" src="https://www.figma.com/api/mcp/asset/1734411f-1326-4e71-9116-c7c1d9973fa0"/><span>Zapatos</span></div></div></div></div></main></div><button aria-label="Ver mi tienda" class="dashboard-back" data-dashboard-close="" type="button">Ver mi tienda</button></div><button aria-expanded="false" aria-label="Ver el dashboard" class="workflow-view-link" data-dashboard-trigger="" data-label-closed="Ver el dashboard" data-label-open="Ver mi tienda" type="button"><span class="dashboard-ripple"></span><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="workflow-action-label">Ver el dashboard</span></button></div>
+</article>
+<article class="workflow-panel" data-dash-body="Cada producto pasa al dashboard con imagen, precio, descuento, variantes e inventario para que puedas ajustar la venta sin depender de procesos manuales." data-dash-title="Productos editables desde el panel" data-result-node="15:15487" data-source-node="15:15508" data-step="products" data-store-body="Personaliza tus productos con imágenes, tallas, colores y descuentos. ¡Hazlos únicos!" data-store-title="Sube tus productos y dale tu toque personal" data-workflow-panel="">
+<nav aria-label="Flujo Shops" class="workflow-tabs"><button class="workflow-tab">Define la identidad de tu tienda</button><button class="workflow-tab">Crea categorías</button><button class="workflow-tab is-active">Gestiona tus productos</button><button class="workflow-tab">Panel administrativo</button></nav>
+<div class="workflow-copy" data-workflow-copy=""><h3 data-copy-title="">Sube tus productos y dale tu toque personal.</h3><p data-copy-body="">Personaliza tus productos con imágenes, tallas, colores y descuentos. <strong>¡Hazlos únicos!</strong></p><a class="primary-small" href="#registro">Comenzar</a></div>
+<div class="workflow-stage"><div class="workflow-visual" data-figma-source="15:15508" data-storefront-view=""><div class="shop-ui-window"><div class="ui-browser"><span class="ui-url">modabeauty.epayco.me/producto</span></div><div class="product-detail"><div class="thumbs"><img alt="Miniatura producto" src="https://www.figma.com/api/mcp/asset/ed781744-8d1c-42bc-b364-6a21db20456f"/><img alt="Miniatura producto" src="https://www.figma.com/api/mcp/asset/0b3e9844-deed-478b-a448-00b7a95c6ff1"/><img alt="Miniatura producto" src="https://www.figma.com/api/mcp/asset/1734411f-1326-4e71-9116-c7c1d9973fa0"/></div><img alt="Chaqueta deportiva amarilla" class="main-product-img" src="https://www.figma.com/api/mcp/asset/bd21651b-11bb-4604-895b-ca21cfe4a092"/><div class="product-info"><h4>Moda deportiva</h4><div class="price"><del>Desde $100.000</del><br/>Desde $50.000 COP</div><p>Comodidad y estilo en cada movimiento.</p><div class="product-option">Color: ●</div><div class="product-option">Talla: S · M</div><span class="store-btn">Comprar ahora</span></div></div></div></div><div aria-hidden="true" class="dashboard-result" data-dashboard-view="" data-figma-result="15:15487" hidden=""><div class="dashboard-shell"><aside class="dash-sidebar"><div class="dash-logo">ePayco</div><div class="dash-nav"><span>Mi tienda</span><span>Categorías</span><span class="active">Productos</span><span>Carritos y ventas</span></div></aside><main class="dash-main"><div class="dashboard-topbar"><span>Inicio / Shops / Productos</span><strong>Producto editado</strong></div><div class="dashboard-card" style="position:relative"><div class="discount-flag">50%</div><h4>Gestiona tus productos</h4><div class="product-admin-form"><img alt="Producto en edición" src="https://www.figma.com/api/mcp/asset/bd21651b-11bb-4604-895b-ca21cfe4a092"/><div class="form-lines"><div class="field">Nombre<strong>Chaqueta de Jean</strong></div><div class="form-row"><div class="field">Precio original<strong>$100.000 COP</strong></div><div class="field">Precio oferta<strong>$50.000 COP</strong></div></div><div class="form-row"><div class="field">Color<strong>Amarillo</strong></div><div class="field">Tallas<strong>S · M</strong></div></div><div class="field">Inventario<strong>10 productos disponibles</strong></div><span class="store-btn">Guardar producto</span></div></div></div></main></div><button aria-label="Ver mi tienda" class="dashboard-back" data-dashboard-close="" type="button">Ver mi tienda</button></div><button aria-expanded="false" aria-label="Ver el dashboard" class="workflow-view-link" data-dashboard-trigger="" data-label-closed="Ver el dashboard" data-label-open="Ver mi tienda" type="button"><span class="dashboard-ripple"></span><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="workflow-action-label">Ver el dashboard</span></button></div>
+</article>
+<article class="workflow-panel" data-dash-body="El panel administrativo muestra filtros, estados de pago, entrega y acción sobre cada carrito para gestionar ventas reales con trazabilidad." data-dash-title="Carritos y ventas con control operativo" data-result-node="15:15615" data-source-node="15:16137" data-step="admin" data-store-body="Centraliza la gestión de tu tienda en el Dashboard ePayco. Visualiza tus ventas en el módulo de carritos y ventas, y actualiza el estado de tus productos." data-store-title="Administra tu tienda desde un solo lugar" data-workflow-panel="">
+<nav aria-label="Flujo Shops" class="workflow-tabs"><button class="workflow-tab">Define la identidad de tu tienda</button><button class="workflow-tab">Crea categorías</button><button class="workflow-tab">Gestiona tus productos</button><button class="workflow-tab is-active">Panel administrativo</button></nav>
+<div class="workflow-copy" data-workflow-copy=""><h3 data-copy-title="">Administra tu tienda desde un solo lugar</h3><p data-copy-body="">Centraliza la gestión de tu tienda en el Dashboard ePayco. Visualiza tus ventas en el módulo de carritos y ventas, y actualiza el estado de tus productos.</p><a class="primary-small" href="#registro">Comenzar</a></div>
+<div class="workflow-stage"><div class="workflow-visual" data-figma-source="15:16137" data-storefront-view=""><div class="shop-ui-window cart-view"><div class="checkout-steps"><span>1</span><span>2</span><span>3</span><span>4</span></div><h4>Carrito de compras</h4><div class="cart-row"><img alt="Producto carrito" src="https://www.figma.com/api/mcp/asset/22827c0d-37bd-4a9e-a75d-268aace049c9"/><span>Vestido</span><span>1</span><strong>$6.000 COP</strong><strong>$6.000 COP</strong></div><span class="cart-continue">Continuar</span></div></div><div aria-hidden="true" class="dashboard-result" data-dashboard-view="" data-figma-result="15:15615" hidden=""><div class="dashboard-shell"><aside class="dash-sidebar"><div class="dash-logo">ePayco</div><div class="dash-nav"><span>Mi tienda</span><span>Categorías</span><span>Productos</span><span class="active">Carritos y ventas</span></div></aside><main class="dash-main"><div class="dashboard-topbar"><span>Inicio / Shops / Carritos y Ventas</span><strong>Carritos y Ventas</strong></div><div class="dashboard-card"><div class="cart-dashboard-layout"><aside class="filter-card"><strong>Filtros</strong><span class="filter-pill">Rangos de fecha</span><span class="filter-pill">Estado Entrega</span><span class="filter-pill">Estados del pago</span><span class="filter-pill">Estados del carrito</span></aside><div><h4>Lista de carritos</h4><div class="table-list cart-dashboard-table"><div class="table-head"><span>ID</span><span>Fecha</span><span>Cantidad</span><span>Estado</span><span>Pago</span><span>Entregado</span><span>Acción</span></div><div class="table-row"><span>123456789</span><span>2023-08-09T14:23</span><span>1 productos</span><span>ACTIVO</span><span class="approved">APROBADA</span><span class="delivered">ENTREGADO</span><span class="action-dot">👁</span></div><div class="table-row"><span>123456789</span><span>2023-08-09T14:23</span><span>2 productos</span><span>ACTIVO</span><span class="approved">APROBADA</span><span class="delivered">ENTREGADO</span><span class="action-dot">👁</span></div><div class="table-row"><span>123456789</span><span>2023-08-09T14:23</span><span>4 productos</span><span>ACTIVO</span><span class="approved">APROBADA</span><span class="delivered">ENTREGADO</span><span class="action-dot">👁</span></div></div></div></div></div></main></div><button aria-label="Ver mi tienda" class="dashboard-back" data-dashboard-close="" type="button">Ver mi tienda</button></div><button aria-expanded="false" aria-label="Ver el dashboard" class="workflow-view-link" data-dashboard-trigger="" data-label-closed="Ver el dashboard" data-label-open="Ver mi tienda" type="button"><span class="dashboard-ripple"></span><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="workflow-action-label">Ver el dashboard</span></button></div>
+</article>
+</div>
+</section>
+<section aria-labelledby="features-title" class="features section-gray">
+<div class="container section-head">
+<span class="eyebrow">FUNCIONES CLAVE</span>
+<h2 id="features-title">Todo lo que la página debe hacer evidente</h2>
+<p>La información se organiza para evitar una página larga sin foco. Cada bloque responde una objeción real del comercio.</p>
+</div>
+<div class="container cards-grid six reveal-group">
+<article class="simple-card"><h3>Constructor de tienda</h3><p>Arma una presencia online sin depender de desarrollo complejo.</p></article>
+<article class="simple-card"><h3>Catálogo administrable</h3><p>Productos, imágenes, variantes, precios y categorías.</p></article>
+<article class="simple-card"><h3>Checkout integrado</h3><p>Medios de pago visibles y experiencia de pago clara.</p></article>
+<article class="simple-card"><h3>Gestión de pedidos</h3><p>Seguimiento de órdenes, estados y pagos recibidos.</p></article>
+<article class="simple-card"><h3>Personalización de marca</h3><p>Banners, colores, contenido y estilo comercial.</p></article>
+<article class="simple-card"><h3>Enlace para vender</h3><p>Comparte la tienda desde redes, WhatsApp o campañas.</p></article>
+</div>
+</section>
+<section aria-labelledby="seller-carousel-title" class="seller-carousel-section" data-seller-carousel="" id="casos">
+<div class="container seller-carousel">
+<div class="seller-carousel-header">
+<div class="section-head compact">
+<span class="eyebrow">CASOS DE USO</span>
+<h2 id="seller-carousel-title">¿Quién puede vender con Shops?</h2>
+<p>Crea tu tienda con pagos integrados y empieza a vender desde cualquier parte de Colombia, sin conocimientos técnicos.</p>
+</div>
+<div aria-label="Controles del carrusel" class="seller-controls">
+<button aria-label="Anterior" class="seller-arrow" data-seller-prev="" type="button">‹</button>
+<button aria-label="Siguiente" class="seller-arrow" data-seller-next="" type="button">›</button>
+</div>
+</div>
+<div class="seller-viewport">
+<div class="seller-track">
+<article aria-hidden="false" class="seller-slide is-active">
+<div aria-hidden="true" class="seller-visual"><div class="seller-person"></div><div class="seller-check">✓</div><div class="seller-pop"><div class="tiny-browser"></div><div class="tiny-image"></div><strong>ActiveFit Set</strong><span>$88.000 COP</span></div></div>
+<div class="seller-content"><h2>¿Quién puede vender con Shops?</h2><p>Crea tu tienda con <strong>pagos integrados</strong> y empieza a vender desde cualquier parte de Colombia, <strong>sin conocimientos técnicos.</strong></p><div class="seller-list"><article class="seller-item is-highlight"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para emprendedores digitales:</h3><p>Crea una tienda sin complicaciones, sin desarrolladores y con pagos integrados desde el primer día.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para negocios físicos que quieren vender online:</h3><p>Lleva tu tienda física al canal digital, administra tus productos desde el mismo lugar y recibe pagos en línea fácilmente.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para creadores de contenido y marcas personales:</h3><p>Ideal si vendes por Instagram, WhatsApp o TikTok. Con Shops puedes tener un enlace único con catálogo y pago listo para tus seguidores.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para freelancers y profesionales independientes:</h3><p>Cobra tus servicios, vende productos digitales o físicos y ten el control total de tu tienda.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para microempresas y pymes:</h3><p>Administra tu catálogo, revisa tus ventas y escala con herramientas pensadas para tu etapa de negocio.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Una tienda independiente:</h3><p>Con Payco Shops puedes crear tu propia lista de clientes y manejar inventarios cerrados, sin depender de CRM, APIs o sistemas externos.</p></div></article></div></div>
+</article>
+<article aria-hidden="true" class="seller-slide">
+<div aria-hidden="true" class="seller-visual"><div class="seller-person"></div><div class="seller-check">✓</div><div class="seller-pop"><div class="tiny-browser"></div><div class="tiny-image"></div><strong>ActiveFit Set</strong><span>$88.000 COP</span></div></div>
+<div class="seller-content"><h2>¿Quién puede vender con Shops?</h2><p>Crea tu tienda con <strong>pagos integrados</strong> y empieza a vender desde cualquier parte de Colombia, <strong>sin conocimientos técnicos.</strong></p><div class="seller-list"><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para emprendedores digitales:</h3><p>Crea una tienda sin complicaciones, sin desarrolladores y con pagos integrados desde el primer día.</p></div></article><article class="seller-item is-highlight"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para negocios físicos que quieren vender online:</h3><p>Lleva tu tienda física al canal digital, administra tus productos desde el mismo lugar y recibe pagos en línea fácilmente.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para creadores de contenido y marcas personales:</h3><p>Ideal si vendes por Instagram, WhatsApp o TikTok. Con Shops puedes tener un enlace único con catálogo y pago listo para tus seguidores.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para freelancers y profesionales independientes:</h3><p>Cobra tus servicios, vende productos digitales o físicos y ten el control total de tu tienda.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para microempresas y pymes:</h3><p>Administra tu catálogo, revisa tus ventas y escala con herramientas pensadas para tu etapa de negocio.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Una tienda independiente:</h3><p>Con Payco Shops puedes crear tu propia lista de clientes y manejar inventarios cerrados, sin depender de CRM, APIs o sistemas externos.</p></div></article></div></div>
+</article>
+<article aria-hidden="true" class="seller-slide">
+<div aria-hidden="true" class="seller-visual"><div class="seller-person"></div><div class="seller-check">✓</div><div class="seller-pop"><div class="tiny-browser"></div><div class="tiny-image"></div><strong>ActiveFit Set</strong><span>$88.000 COP</span></div></div>
+<div class="seller-content"><h2>¿Quién puede vender con Shops?</h2><p>Crea tu tienda con <strong>pagos integrados</strong> y empieza a vender desde cualquier parte de Colombia, <strong>sin conocimientos técnicos.</strong></p><div class="seller-list"><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para emprendedores digitales:</h3><p>Crea una tienda sin complicaciones, sin desarrolladores y con pagos integrados desde el primer día.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para negocios físicos que quieren vender online:</h3><p>Lleva tu tienda física al canal digital, administra tus productos desde el mismo lugar y recibe pagos en línea fácilmente.</p></div></article><article class="seller-item is-highlight"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para creadores de contenido y marcas personales:</h3><p>Ideal si vendes por Instagram, WhatsApp o TikTok. Con Shops puedes tener un enlace único con catálogo y pago listo para tus seguidores.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para freelancers y profesionales independientes:</h3><p>Cobra tus servicios, vende productos digitales o físicos y ten el control total de tu tienda.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para microempresas y pymes:</h3><p>Administra tu catálogo, revisa tus ventas y escala con herramientas pensadas para tu etapa de negocio.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Una tienda independiente:</h3><p>Con Payco Shops puedes crear tu propia lista de clientes y manejar inventarios cerrados, sin depender de CRM, APIs o sistemas externos.</p></div></article></div></div>
+</article>
+<article aria-hidden="true" class="seller-slide">
+<div aria-hidden="true" class="seller-visual"><div class="seller-person"></div><div class="seller-check">✓</div><div class="seller-pop"><div class="tiny-browser"></div><div class="tiny-image"></div><strong>ActiveFit Set</strong><span>$88.000 COP</span></div></div>
+<div class="seller-content"><h2>¿Quién puede vender con Shops?</h2><p>Crea tu tienda con <strong>pagos integrados</strong> y empieza a vender desde cualquier parte de Colombia, <strong>sin conocimientos técnicos.</strong></p><div class="seller-list"><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para emprendedores digitales:</h3><p>Crea una tienda sin complicaciones, sin desarrolladores y con pagos integrados desde el primer día.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para negocios físicos que quieren vender online:</h3><p>Lleva tu tienda física al canal digital, administra tus productos desde el mismo lugar y recibe pagos en línea fácilmente.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para creadores de contenido y marcas personales:</h3><p>Ideal si vendes por Instagram, WhatsApp o TikTok. Con Shops puedes tener un enlace único con catálogo y pago listo para tus seguidores.</p></div></article><article class="seller-item is-highlight"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para freelancers y profesionales independientes:</h3><p>Cobra tus servicios, vende productos digitales o físicos y ten el control total de tu tienda.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para microempresas y pymes:</h3><p>Administra tu catálogo, revisa tus ventas y escala con herramientas pensadas para tu etapa de negocio.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Una tienda independiente:</h3><p>Con Payco Shops puedes crear tu propia lista de clientes y manejar inventarios cerrados, sin depender de CRM, APIs o sistemas externos.</p></div></article></div></div>
+</article>
+<article aria-hidden="true" class="seller-slide">
+<div aria-hidden="true" class="seller-visual"><div class="seller-person"></div><div class="seller-check">✓</div><div class="seller-pop"><div class="tiny-browser"></div><div class="tiny-image"></div><strong>ActiveFit Set</strong><span>$88.000 COP</span></div></div>
+<div class="seller-content"><h2>¿Quién puede vender con Shops?</h2><p>Crea tu tienda con <strong>pagos integrados</strong> y empieza a vender desde cualquier parte de Colombia, <strong>sin conocimientos técnicos.</strong></p><div class="seller-list"><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para emprendedores digitales:</h3><p>Crea una tienda sin complicaciones, sin desarrolladores y con pagos integrados desde el primer día.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para negocios físicos que quieren vender online:</h3><p>Lleva tu tienda física al canal digital, administra tus productos desde el mismo lugar y recibe pagos en línea fácilmente.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para creadores de contenido y marcas personales:</h3><p>Ideal si vendes por Instagram, WhatsApp o TikTok. Con Shops puedes tener un enlace único con catálogo y pago listo para tus seguidores.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para freelancers y profesionales independientes:</h3><p>Cobra tus servicios, vende productos digitales o físicos y ten el control total de tu tienda.</p></div></article><article class="seller-item is-highlight"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para microempresas y pymes:</h3><p>Administra tu catálogo, revisa tus ventas y escala con herramientas pensadas para tu etapa de negocio.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Una tienda independiente:</h3><p>Con Payco Shops puedes crear tu propia lista de clientes y manejar inventarios cerrados, sin depender de CRM, APIs o sistemas externos.</p></div></article></div></div>
+</article>
+<article aria-hidden="true" class="seller-slide">
+<div aria-hidden="true" class="seller-visual"><div class="seller-person"></div><div class="seller-check">✓</div><div class="seller-pop"><div class="tiny-browser"></div><div class="tiny-image"></div><strong>ActiveFit Set</strong><span>$88.000 COP</span></div></div>
+<div class="seller-content"><h2>¿Quién puede vender con Shops?</h2><p>Crea tu tienda con <strong>pagos integrados</strong> y empieza a vender desde cualquier parte de Colombia, <strong>sin conocimientos técnicos.</strong></p><div class="seller-list"><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para emprendedores digitales:</h3><p>Crea una tienda sin complicaciones, sin desarrolladores y con pagos integrados desde el primer día.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para negocios físicos que quieren vender online:</h3><p>Lleva tu tienda física al canal digital, administra tus productos desde el mismo lugar y recibe pagos en línea fácilmente.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para creadores de contenido y marcas personales:</h3><p>Ideal si vendes por Instagram, WhatsApp o TikTok. Con Shops puedes tener un enlace único con catálogo y pago listo para tus seguidores.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para freelancers y profesionales independientes:</h3><p>Cobra tus servicios, vende productos digitales o físicos y ten el control total de tu tienda.</p></div></article><article class="seller-item"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Para microempresas y pymes:</h3><p>Administra tu catálogo, revisa tus ventas y escala con herramientas pensadas para tu etapa de negocio.</p></div></article><article class="seller-item is-highlight"><span aria-hidden="true" class="seller-icon"><svg viewbox="0 0 48 48"><path d="M15 20h18l-2 15H17l-2-15Z"></path><path d="M19 20c0-4 2-7 5-7s5 3 5 7"></path><path d="M12 20h24"></path><path d="M21 26h6M21 31h6"></path></svg></span><div><h3>Una tienda independiente:</h3><p>Con Payco Shops puedes crear tu propia lista de clientes y manejar inventarios cerrados, sin depender de CRM, APIs o sistemas externos.</p></div></article></div></div>
+</article>
+</div>
+</div>
+<div aria-label="Indicadores del carrusel" class="seller-dots">
+<button aria-label="Ir al slide 1" class="seller-dot is-active" data-seller-dot="0" type="button"></button><button aria-label="Ir al slide 2" class="seller-dot" data-seller-dot="1" type="button"></button><button aria-label="Ir al slide 3" class="seller-dot" data-seller-dot="2" type="button"></button><button aria-label="Ir al slide 4" class="seller-dot" data-seller-dot="3" type="button"></button><button aria-label="Ir al slide 5" class="seller-dot" data-seller-dot="4" type="button"></button><button aria-label="Ir al slide 6" class="seller-dot" data-seller-dot="5" type="button"></button>
+</div>
+</div>
+</section><section aria-labelledby="tutorial-title" class="shops-tutorial section-gray" id="tutoriales" data-node-usecase="1:6034">
+<div class="container tutorial-shell">
+  <div class="tutorial-copy">
+    <span class="eyebrow">TUTORIALES SHOPS</span>
+    <h2 id="tutorial-title">¿No sabes por dónde empezar? Mira nuestro video tutorial y aprende a configurar tu tienda en minutos.</h2>
+  </div>
+  <button class="tutorial-video" type="button" aria-label="Reproducir tutorial de ePayco Shops">
+    <span class="tutorial-video-surface"></span>
+    <span class="tutorial-play" aria-hidden="true">
+      <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="46"></circle><path d="M39 29v38l31-19-31-19Z"></path></svg>
+    </span>
+    <span class="tutorial-video-meta">Configura tu tienda online</span>
+  </button>
+</div>
+</section><section aria-labelledby="usecase-node-title" class="node-usecase section-gray" id="casos-generales" data-node-usecase="348:6024">
+<div class="container node-usecase-heading">
+  <div>
+    <span class="eyebrow">CASOS DE USO</span>
+    <h2 id="usecase-node-title">Crea tu tienda online y <em>vende sin complicaciones</em></h2>
+  </div>
+  <p>Una solución todo en uno para gestionar tu negocio digital, recibir pagos y controlar tus ventas sin necesidad de desarrollos técnicos.</p>
+</div>
+<div class="container node-usecase-stage" data-usecase-stage>
+  <div class="node-usecase-hero" data-usecase-hero>
+    <div class="node-laptop-wrap" aria-hidden="true">
+      <div class="node-red-glow"></div>
+      <img class="node-laptop" alt="Vista de tienda online en laptop" src="https://www.figma.com/api/mcp/asset/6a2a5f6e-08ab-4799-88e8-78e9f2d10dc9" loading="lazy"/>
+      <div class="node-laptop-badge">Tienda activa</div>
+    </div>
+    <div class="node-copy-card" data-usecase-copy>
+      <p>Ideal para negocios que buscan un modelo tipo agregador, outlet, catálogo cerrado o venta rápida con una implementación <strong>ágil y segura.</strong></p>
+      <div class="node-copy-actions">
+        <a class="btn btn-primary" href="#registro">Crear tienda</a>
+        <a class="node-text-link" href="#transformacion">Ver cómo funciona</a>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Beneficios para vender con Shops" class="node-benefit-rail" data-usecase-rail>
+    <article class="node-benefit-card is-active" data-usecase-card data-index="0">
+      <span class="node-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 8h18v15H7z"></path><path d="M11 12h10M11 16h6M11 20h10"></path></svg></span>
+      <h3>Gestión de negocio</h3>
+      <ul><li>Construye y gestiona tu propia base de clientes.</li><li>Administra productos, inventario y pedidos desde un solo lugar.</li><li>Ideal para modelos tipo outlet o inventarios cerrados.</li></ul>
+    </article>
+    <article class="node-benefit-card" data-usecase-card data-index="1">
+      <span class="node-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"></path><path d="M6 27c1.8-5 5.2-7.5 10-7.5S24.2 22 26 27"></path><path d="M22 9l4 4m0-4l-4 4"></path></svg></span>
+      <h3>Facilidad y autonomía</h3>
+      <ul><li>Configuración rápida, sin necesidad de conocimientos técnicos.</li><li>Diseñado para que puedas gestionarlo de forma independiente.</li><li>Experiencia intuitiva y fácil de usar.</li></ul>
+    </article>
+    <article class="node-benefit-card" data-usecase-card data-index="2">
+      <span class="node-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M12 18l8-8a5 5 0 0 1 7 7l-3 3"></path><path d="M20 14l-8 8a5 5 0 1 1-7-7l3-3"></path></svg></span>
+      <h3>Integración y pagos</h3>
+      <ul><li>Integrado directamente con la pasarela de pagos ePayco.</li><li>Acepta múltiples medios de pago en una sola solución.</li><li>No necesitas herramientas adicionales.</li></ul>
+    </article>
+    <article class="node-benefit-card" data-usecase-card data-index="3">
+      <span class="node-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9 14V9a7 7 0 0 1 14 0v5"></path><path d="M7 14h18v13H7z"></path><path d="M16 19v4"></path></svg></span>
+      <h3>Seguridad</h3>
+      <ul><li>Nivel de seguridad tipo banco para protección de datos.</li><li>Infraestructura robusta respaldada por ePayco.</li><li>Mayor control frente a soluciones de código abierto.</li></ul>
+    </article>
+  </div>
+  <div aria-hidden="true" class="node-usecase-dots" data-usecase-dots><span class="is-active"></span><span></span><span></span><span></span></div>
+</div>
+</section>
+<section aria-labelledby="comparison-title" class="comparison section-gray">
+<div class="container section-head compact">
+<span class="eyebrow">DECISIÓN</span>
+<h2 id="comparison-title">Por qué Shops frente a vender solo por redes</h2>
+</div>
+<div class="container compare-table reveal-up">
+<div class="compare-head"><strong>Venta manual</strong><strong>ePayco Shops</strong></div>
+<div class="compare-row"><span>Catálogo disperso en chats o publicaciones</span><strong>Catálogo centralizado con productos y precios</strong></div>
+<div class="compare-row"><span>Pago por coordinación manual</span><strong>Checkout claro con pagos ePayco</strong></div>
+<div class="compare-row"><span>Seguimiento operativo difícil</span><strong>Pedidos y pagos visibles en el panel</strong></div>
+<div class="compare-row"><span>Menor percepción profesional</span><strong>Experiencia de tienda con confianza de marca</strong></div>
+</div>
+</section>
+<section aria-labelledby="responsive-title" class="responsive-preview">
+<div class="container responsive-grid">
+<div class="section-head dark-head">
+<span class="eyebrow">RESPONSIVE</span>
+<h2 id="responsive-title">La experiencia mobile prioriza acción, prueba y claridad</h2>
+<p>En móvil, la página reduce elementos secundarios y muestra primero: crear tienda, mockup de compra, beneficios y pasos.</p>
+</div>
+<div aria-label="Vista móvil conceptual" class="phone-mockup reveal-scale">
+<div class="phone-top">ePayco Shops</div>
+<h3>Crea tu tienda online</h3>
+<p>Publica productos, cobra con ePayco y gestiona pedidos.</p>
+<a class="btn btn-primary" href="#registro">Crear tienda</a>
+<div class="phone-product">
+<div></div>
+<strong>Kit café premium</strong>
+<span>$89.900 COP</span>
+<button type="button">Comprar</button>
+</div>
+</div>
+</div>
+</section>
+<section aria-labelledby="faq-title" class="faq section-white" id="faq">
+<div class="container section-head compact">
+<span class="eyebrow">PREGUNTAS CLAVE</span>
+<h2 id="faq-title">Objeciones que la página debe resolver antes del CTA</h2>
+</div>
+<div class="container faq-list">
+<details open="">
+<summary>¿Necesito una página web previa?</summary>
+<p>No. Shops debe comunicarse como una forma de crear presencia de venta desde cero.</p>
+</details>
+<details>
+<summary>¿Cómo pagan mis clientes?</summary>
+<p>El checkout con ePayco debe aparecer visualmente con medios de pago y estado de aprobación.</p>
+</details>
+<details>
+<summary>¿Puedo administrar pedidos?</summary>
+<p>La propuesta muestra panel de ventas, pedidos recientes y productos publicados.</p>
+</details>
+</div>
+</section>
+<section aria-labelledby="cta-title" class="final-cta" id="registro">
+<div class="container cta-band reveal-scale">
+<div>
+<span class="eyebrow">LISTO PARA VENDER ONLINE</span>
+<h2 id="cta-title">Crea una tienda profesional y recibe pagos con ePayco</h2>
+<p>Cierre con acción simple, confianza cerca del botón y una promesa concreta: tienda, catálogo, checkout y gestión en un solo flujo.</p>
+<div class="cta-actions">
+<a class="btn btn-white" href="#registro">Regístrate gratis</a>
+<a class="btn btn-ghost-light" href="#contacto">Hablar con asesor</a>
+</div>
+</div>
+<aside aria-label="Checklist de confianza" class="cta-checklist">
+<h3>Checklist de confianza</h3>
+<ul>
+<li>Checkout visible</li>
+<li>Pagos integrados</li>
+<li>Panel de pedidos</li>
+<li>Marca profesional</li>
+</ul>
+</aside>
+</div>
+</section>
+</main>
+<footer class="site-footer" id="contacto">
+<div class="container footer-top">
+<div>
+<h2>Comienza ahora con ePayco</h2>
+<p>Resuelve inquietudes o consultas con canales de ayuda y soporte para acompañar tu operación.</p>
+</div>
+<div aria-hidden="true" class="footer-mark">P</div>
+</div>
+<div class="container footer-grid">
+<div><strong>Soporte</strong><a href="#contacto">Chatea con nosotros</a><a href="#contacto">Contacta a un asesor</a><a href="#contacto">Crea un ticket</a></div>
+<div><strong>Productos</strong><a href="#top">Pagos</a><a href="#top">Recaudo</a><a href="#top">Control</a><a href="#top">Shops</a></div>
+<div><strong>Información</strong><a href="#top">Recursos gráficos</a><a href="#faq">Preguntas frecuentes</a><a href="#top">Documentación</a></div>
+<div><strong>Legal</strong><a href="#top">Términos y condiciones</a><a href="#top">Aviso de privacidad</a><a href="#top">Tratamiento de datos</a></div>
+</div>
+<div class="container footer-bottom">
+<span>Certificados y afiliaciones</span>
+<span>Copyright 2011-2026 ePayco.com. Todos los derechos reservados.</span>
+</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+(function () {
+  const menuButton = document.querySelector('.menu-button');
+  const mobileNav = document.querySelector('.mobile-nav');
+  const header = document.querySelector('[data-elevate]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function closeNav() {
+    document.body.classList.remove('nav-open');
+    if (menuButton) menuButton.setAttribute('aria-expanded', 'false');
+  }
+
+  if (menuButton) {
+    menuButton.addEventListener('click', function () {
+      const isOpen = document.body.classList.toggle('nav-open');
+      menuButton.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+
+  if (mobileNav) {
+    mobileNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeNav));
+  }
+
+  function onScroll() {
+    if (!header) return;
+    header.classList.toggle('is-scrolled', window.scrollY > 10);
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+
+  function setWorkflowCopy(panel, open) {
+    const title = panel.querySelector('[data-copy-title]');
+    const body = panel.querySelector('[data-copy-body]');
+    if (!title || !body) return;
+    const nextTitle = open ? panel.dataset.dashboardTitle : panel.dataset.storeTitle;
+    const nextBody = open ? panel.dataset.dashboardBody : panel.dataset.storeBody;
+    if (!nextTitle || !nextBody) return;
+    if (!window.gsap || reduceMotion) {
+      title.textContent = nextTitle;
+      body.textContent = nextBody;
+      return;
+    }
+    const copyTargets = [title, body];
+    gsap.killTweensOf(copyTargets);
+    gsap.to(copyTargets, {
+      autoAlpha: 0,
+      y: open ? -12 : 12,
+      duration: 0.18,
+      ease: 'power2.in',
+      stagger: 0.025,
+      onComplete: () => {
+        title.textContent = nextTitle;
+        body.textContent = nextBody;
+        gsap.fromTo(copyTargets,
+          { autoAlpha: 0, y: open ? 18 : -18 },
+          { autoAlpha: 1, y: 0, duration: 0.34, ease: 'power3.out', stagger: 0.035 }
+        );
+      }
+    });
+  }
+
+  function setTriggerLabel(trigger, open) {
+    if (!trigger) return;
+    const label = trigger.querySelector('.workflow-action-label');
+    const next = open ? (trigger.dataset.labelOpen || 'Ver mi tienda') : (trigger.dataset.labelClosed || 'Ver el dashboard');
+    trigger.setAttribute('aria-expanded', String(open));
+    trigger.setAttribute('aria-label', next);
+    if (!label) return;
+    if (!window.gsap || reduceMotion) {
+      label.textContent = next;
+      return;
+    }
+    gsap.killTweensOf(label);
+    gsap.to(label, {
+      autoAlpha: 0,
+      y: open ? -8 : 8,
+      duration: 0.16,
+      ease: 'power2.in',
+      onComplete: () => {
+        label.textContent = next;
+        gsap.fromTo(label,
+          { autoAlpha: 0, y: open ? 10 : -10 },
+          { autoAlpha: 1, y: 0, duration: 0.24, ease: 'power3.out' }
+        );
+      }
+    });
+  }
+
+  function setDashboardState(panel, open, trigger) {
+    const store = panel.querySelector('[data-storefront-view]');
+    const dash = panel.querySelector('[data-dashboard-view]');
+    const ripple = trigger ? trigger.querySelector('.dashboard-ripple') : null;
+    if (!store || !dash) return;
+    panel.classList.toggle('is-dashboard-open', open);
+    dash.setAttribute('aria-hidden', String(!open));
+    setWorkflowCopy(panel, open);
+    setTriggerLabel(trigger, open);
+    if (!window.gsap || reduceMotion) {
+      dash.hidden = !open;
+      dash.style.visibility = open ? 'visible' : 'hidden';
+      dash.style.opacity = open ? '1' : '0';
+      store.style.opacity = open ? '0' : '1';
+      store.style.visibility = open ? 'hidden' : 'visible';
+      return;
+    }
+    gsap.killTweensOf([store, dash, ripple, dash.querySelectorAll('*'), store.querySelectorAll('*')]);
+    if (open) {
+      dash.hidden = false;
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      if (ripple) tl.fromTo(ripple, { scale: 0, autoAlpha: 0.9 }, { scale: 36, autoAlpha: 0, duration: 0.62 }, 0);
+      tl.to(store, { autoAlpha: 0, x: -72, rotateY: 12, scale: 0.94, filter: 'blur(4px)', duration: 0.42, ease: 'power2.in' }, 0.06)
+        .set(dash, { visibility: 'visible' }, 0.18)
+        .fromTo(dash, { autoAlpha: 0, x: 94, rotateY: -14, scale: 0.95, filter: 'blur(8px)' }, { autoAlpha: 1, x: 0, rotateY: 0, scale: 1, filter: 'blur(0px)', duration: 0.78, ease: 'power4.out' }, 0.22)
+        .fromTo(dash.querySelectorAll('.dash-sidebar span, .dashboard-card, .client-tile, .table-row, .domain-row, .field, .filter-pill'), { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.34, stagger: 0.035, ease: 'power2.out' }, 0.55);
+    } else {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: () => { dash.hidden = true; dash.setAttribute('aria-hidden', 'true'); } });
+      tl.to(dash, { autoAlpha: 0, x: 70, rotateY: -10, scale: 0.96, filter: 'blur(5px)', duration: 0.32, ease: 'power2.in' }, 0)
+        .set(store, { visibility: 'visible' }, 0.08)
+        .to(store, { autoAlpha: 1, x: 0, rotateY: 0, scale: 1, filter: 'blur(0px)', duration: 0.52, ease: 'power4.out' }, 0.12);
+    }
+  }
+
+  function setupDashboardTransitions() {
+    document.querySelectorAll('[data-workflow-panel]').forEach((panel) => {
+      const trigger = panel.querySelector('[data-dashboard-trigger]');
+      const closer = panel.querySelector('[data-dashboard-close]');
+      if (trigger) trigger.addEventListener('click', () => {
+        const willOpen = !panel.classList.contains('is-dashboard-open');
+        setDashboardState(panel, willOpen, trigger);
+      });
+      if (closer) closer.addEventListener('click', () => setDashboardState(panel, false, trigger));
+    });
+  }
+  setupDashboardTransitions();
+
+  if (!window.gsap || reduceMotion) {
+    document.querySelectorAll('[data-counter]').forEach((el) => setCounterText(el, Number(el.dataset.target || 0)));
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  window.addEventListener('load', () => { if (window.ScrollTrigger) ScrollTrigger.refresh(); });
+  document.querySelectorAll('img').forEach(img => { if (!img.complete) img.addEventListener('load', () => { if (window.ScrollTrigger) ScrollTrigger.refresh(); }, { once: true }); });
+
+  // Visibility fix: do not pre-hide global sections; animate from visible state to avoid blank blocks.
+
+  const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  heroTl
+    .from('.hero .reveal-up', { autoAlpha: 0, y: 34, duration: 0.75, stagger: 0.08 })
+    .from('.browser-card', { autoAlpha: 0, y: 42, rotate: -1.5, duration: 0.85 }, '-=0.52')
+    .from('.pop-card', { autoAlpha: 0, y: 22, scale: 0.96, duration: 0.5, stagger: 0.12 }, '-=0.32')
+    .from('.bars span', { scaleY: 0, duration: 0.6, stagger: 0.07, ease: 'back.out(1.6)' }, '-=0.32');
+
+  gsap.to('.floating-card', {
+    y: -12,
+    duration: 3.8,
+    ease: 'sine.inOut',
+    repeat: -1,
+    yoyo: true
+  });
+
+  // ScrollTrigger profesional: anima al entrar y revierte solo cuando la seccion sale por abajo.
+  // Esto mantiene el efecto up/down sin dejar bloques en blanco mientras el usuario los esta leyendo.
+  function revealTween(targets, fromVars, toVars, trigger, options = {}) {
+    const nodes = gsap.utils.toArray(targets).filter(Boolean);
+    if (!nodes.length) return null;
+    const baseFrom = Object.assign({ autoAlpha: 0.38, y: 30 }, fromVars || {});
+    const baseTo = Object.assign({
+      autoAlpha: 1,
+      y: 0,
+      duration: options.duration || 0.72,
+      ease: options.ease || 'power3.out',
+      immediateRender: false,
+      scrollTrigger: {
+        trigger: trigger || nodes[0],
+        start: options.start || 'top 88%',
+        end: options.end || 'bottom 14%',
+        toggleActions: options.toggleActions || 'play none none reverse',
+        invalidateOnRefresh: true
+      }
+    }, toVars || {});
+    return gsap.fromTo(nodes, baseFrom, baseTo);
+  }
+
+  gsap.utils.toArray('.section-head').forEach((el) => {
+    revealTween(el, { autoAlpha: 0.5, y: 36 }, {}, el, { start: 'top 90%' });
+  });
+
+  gsap.utils.toArray('.reveal-group').forEach((group) => {
+    revealTween(group.children, { autoAlpha: 0.42, y: 28 }, { stagger: 0.075 }, group, { start: 'top 90%', duration: 0.64 });
+  });
+
+  gsap.utils.toArray('.reveal-scale, .admin-mockup, .cta-band, .phone-mockup').forEach((el) => {
+    revealTween(el, { autoAlpha: 0.42, y: 34, scale: 0.965 }, { scale: 1 }, el, { start: 'top 90%', duration: 0.78 });
+  });
+
+  gsap.utils.toArray('.compare-table').forEach((el) => {
+    revealTween(el, { autoAlpha: 0.45, y: 32 }, {}, el, { start: 'top 90%' });
+  });
+
+  // Animaciones GSAP dedicadas para la seccion de 4 nodos Shops.
+  // Objetivo: que se sienta premium al bajar y al subir, sin ocultarse mientras se lee.
+  function forceWorkflowVisible(panel) {
+    const visibleParts = [
+      panel,
+      ...panel.querySelectorAll('.workflow-tab, .workflow-copy > *, .workflow-stage, [data-storefront-view], .shop-ui-window, .store-product, .category-card, .product-detail-main, .cart-row')
+    ];
+    gsap.set(visibleParts, { autoAlpha: 1, clearProps: 'filter' });
+  }
+
+  function playWorkflowIntro(panel, direction) {
+    const tabs = gsap.utils.toArray(panel.querySelectorAll('.workflow-tab'));
+    const copyItems = gsap.utils.toArray(panel.querySelectorAll('.workflow-copy > *'));
+    const stage = panel.querySelector('.workflow-stage');
+    const visual = panel.querySelector('[data-storefront-view]');
+    const storeWindow = panel.querySelector('.shop-ui-window');
+    const internalItems = gsap.utils.toArray(panel.querySelectorAll('.store-product, .category-card, .product-detail-main, .cart-row, .thumbs img, .product-option, .store-btn'));
+    const trigger = panel.querySelector('[data-dashboard-trigger]');
+
+    // Si el usuario dejo abierto un dashboard, no pisamos esa transicion.
+    if (panel.classList.contains('is-dashboard-open')) {
+      forceWorkflowVisible(panel);
+      return;
+    }
+
+    gsap.killTweensOf([panel, tabs, copyItems, stage, visual, storeWindow, internalItems, trigger]);
+    const dir = direction < 0 ? -1 : 1;
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out', overwrite: 'auto' } });
+    tl.fromTo(panel,
+      { autoAlpha: 0.78, y: 44 * dir, scale: 0.982, filter: 'blur(2px)' },
+      { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.58 },
+      0
+    )
+    .fromTo(tabs,
+      { autoAlpha: 0, y: -18 * dir, scale: 0.96 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, stagger: 0.045, ease: 'back.out(1.35)' },
+      0.08
+    )
+    .fromTo(copyItems,
+      { autoAlpha: 0, x: -38, y: 12 * dir },
+      { autoAlpha: 1, x: 0, y: 0, duration: 0.54, stagger: 0.07 },
+      0.14
+    )
+    .fromTo(stage,
+      { autoAlpha: 0.35, x: 76, rotateY: -12, rotateX: 3 * dir, scale: 0.97, filter: 'blur(4px)' },
+      { autoAlpha: 1, x: 0, rotateY: 0, rotateX: 0, scale: 1, filter: 'blur(0px)', duration: 0.74, ease: 'power4.out' },
+      0.18
+    )
+    .fromTo(storeWindow,
+      { y: 26 * dir, rotateZ: -0.8 * dir, scale: 0.985 },
+      { y: 0, rotateZ: 0, scale: 1, duration: 0.72, ease: 'power3.out' },
+      0.28
+    )
+    .fromTo(internalItems,
+      { autoAlpha: 0, y: 18 * dir, scale: 0.965 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, stagger: 0.035, ease: 'power2.out' },
+      0.44
+    )
+    .fromTo(trigger,
+      { autoAlpha: 0, y: 18 * dir, scale: 0.94 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.42, ease: 'back.out(1.5)' },
+      0.55
+    );
+  }
+
+  gsap.utils.toArray('[data-workflow-panel]').forEach((panel) => {
+    const visual = panel.querySelector('[data-storefront-view]');
+    const copy = panel.querySelector('.workflow-copy');
+    const tabs = panel.querySelector('.workflow-tabs');
+    const stage = panel.querySelector('.workflow-stage');
+
+    // Estado base visible: nada queda en blanco antes de activar ScrollTrigger.
+    forceWorkflowVisible(panel);
+
+    ScrollTrigger.create({
+      trigger: panel,
+      start: 'top 84%',
+      end: 'bottom 16%',
+      invalidateOnRefresh: true,
+      onEnter: () => playWorkflowIntro(panel, 1),
+      onEnterBack: () => playWorkflowIntro(panel, -1),
+      onLeave: () => forceWorkflowVisible(panel),
+      onLeaveBack: () => {
+        // Solo cuando la seccion ya salio completamente por arriba dejamos listo un reset suave.
+        // No se aplica mientras el usuario todavia esta leyendo el contenedor.
+        if (!panel.classList.contains('is-dashboard-open')) {
+          gsap.set(panel, { autoAlpha: 0.92, y: -12, scale: 0.995 });
+        }
+      }
+    });
+
+    // Scroll up/down real: microparallax scrubbed en el contenido de cada nodo.
+    // No cambia opacity, solo profundidad, para conservar legibilidad.
+    if (visual) {
+      gsap.fromTo(visual,
+        { y: 26, rotateY: -2.2, rotateX: 1.4 },
+        {
+          y: -26,
+          rotateY: 2.2,
+          rotateX: -1.4,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.85,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    }
+
+    if (copy) {
+      gsap.fromTo(copy,
+        { y: -10 },
+        {
+          y: 10,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.1,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    }
+
+    if (tabs) {
+      gsap.fromTo(tabs,
+        { x: -18 },
+        {
+          x: 18,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    }
+
+    if (stage) {
+      ScrollTrigger.create({
+        trigger: panel,
+        start: 'top 70%',
+        end: 'bottom 35%',
+        onUpdate: (self) => {
+          if (panel.classList.contains('is-dashboard-open')) return;
+          const p = self.progress;
+          const lift = Math.sin(p * Math.PI) * -10;
+          gsap.to(stage, { y: lift, duration: 0.18, overwrite: 'auto', ease: 'power1.out' });
+        }
+      });
+    }
+  });
+
+  gsap.utils.toArray('.shop-ui-window').forEach((el) => {
+    gsap.to(el, { y: -10, duration: 3.2, repeat: -1, yoyo: true, ease: 'sine.inOut', scrollTrigger: { trigger: el, start: 'top 95%', end: 'bottom 5%', toggleActions: 'play pause resume pause' } });
+  });
+
+  gsap.utils.toArray('[data-counter]').forEach((el) => {
+    const target = Number(el.dataset.target || 0);
+    const obj = { value: 0 };
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: () => {
+        obj.value = 0;
+        gsap.to(obj, {
+          value: target,
+          duration: 1.2,
+          ease: 'power2.out',
+          onUpdate: () => setCounterText(el, obj.value)
+        });
+      },
+      onEnterBack: () => {
+        obj.value = 0;
+        gsap.to(obj, {
+          value: target,
+          duration: 1.0,
+          ease: 'power2.out',
+          onUpdate: () => setCounterText(el, obj.value)
+        });
+      }
+    });
+  });
+
+  gsap.utils.toArray('.feature-card, .simple-card, .audience-card, .step-card').forEach((card) => {
+    card.addEventListener('mouseenter', () => gsap.to(card, { y: -6, duration: 0.2, ease: 'power2.out' }));
+    card.addEventListener('mouseleave', () => gsap.to(card, { y: 0, duration: 0.24, ease: 'power2.out' }));
+  });
+
+  function setCounterText(el, value) {
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const compact = el.dataset.compact === 'true';
+    let output;
+
+    if (compact && value >= 1000000) {
+      output = (value / 1000000).toFixed(value >= 10000000 ? 0 : 1) + 'M';
+    } else if (suffix === '%') {
+      output = Number(value).toFixed(1).replace('.0', '');
+    } else {
+      output = Math.round(value).toLocaleString('es-CO');
+    }
+
+    el.textContent = prefix + output + suffix;
+  }
+})();
+
+  </script>
+
+<script>
+(() => {
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initSellerCarousel() {
+    const sellerCarousel = document.querySelector('[data-seller-carousel]');
+    if (!sellerCarousel || sellerCarousel.dataset.restoredInit === 'true') return;
+    sellerCarousel.dataset.restoredInit = 'true';
+    const slides = Array.from(sellerCarousel.querySelectorAll('.seller-slide'));
+    const dots = Array.from(sellerCarousel.querySelectorAll('[data-seller-dot]'));
+    const prev = sellerCarousel.querySelector('[data-seller-prev]');
+    const next = sellerCarousel.querySelector('[data-seller-next]');
+    const sellerIcons = [
+      '<svg viewBox="0 0 48 48"><path d="M10 20h28l-3 19H13l-3-19Z"></path><path d="M16 20c0-5 3-9 8-9s8 4 8 9"></path><path d="M19 28h10M19 34h6"></path></svg>',
+      '<svg viewBox="0 0 48 48"><path d="M9 21h30l-3-8H12l-3 8Z"></path><path d="M12 21v17h24V21"></path><path d="M18 38V27h12v11"></path><path d="M9 21c1 4 6 4 7 0 1 4 6 4 8 0 1 4 6 4 8 0 1 4 6 4 7 0"></path></svg>',
+      '<svg viewBox="0 0 48 48"><rect x="9" y="10" width="12" height="12" rx="2"></rect><rect x="27" y="10" width="12" height="12" rx="2"></rect><rect x="9" y="28" width="12" height="12" rx="2"></rect><rect x="27" y="28" width="12" height="12" rx="2"></rect><path d="M13 16h4M31 16h4M13 34h4M31 34h4"></path></svg>',
+      '<svg viewBox="0 0 48 48"><circle cx="24" cy="16" r="6"></circle><path d="M13 39c2-9 6-14 11-14s9 5 11 14"></path><path d="M33 15l6-6M39 15l-6-6"></path></svg>',
+      '<svg viewBox="0 0 48 48"><rect x="9" y="10" width="30" height="22" rx="3"></rect><path d="M16 39h16M20 32v7M28 32v7M15 18h18M15 24h10M31 24h2"></path></svg>',
+      '<svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="6"></circle><path d="M14 38c1-8 5-13 10-13s9 5 10 13"></path><path d="M35 31h7M38.5 27.5V35"></path><path d="M10 31H5M7.5 28.5V33.5"></path></svg>'
+    ];
+    let index = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
+    let locked = false;
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('is-active', i === index);
+      slide.setAttribute('aria-hidden', String(i !== index));
+      slide.querySelectorAll('.seller-icon').forEach((icon, iconIndex) => {
+        icon.innerHTML = sellerIcons[iconIndex % sellerIcons.length];
+      });
+    });
+    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+
+    function showSlide(nextIndex, direction) {
+      if (locked || nextIndex === index || !slides[nextIndex]) return;
+      locked = true;
+      const current = slides[index];
+      const incoming = slides[nextIndex];
+      dots[index]?.classList.remove('is-active');
+      dots[nextIndex]?.classList.add('is-active');
+      incoming.classList.add('is-active');
+      incoming.setAttribute('aria-hidden', 'false');
+
+      if (window.gsap && !reduceMotion) {
+        gsap.killTweensOf([current, incoming]);
+        gsap.fromTo(incoming, { autoAlpha: 0, x: 44 * direction, scale: 0.988 }, { autoAlpha: 1, x: 0, scale: 1, duration: 1.15, ease: 'power2.out' });
+        gsap.to(current, { autoAlpha: 0, x: -34 * direction, scale: 0.992, duration: 0.92, ease: 'power1.inOut', onComplete: () => {
+          current.classList.remove('is-active');
+          current.setAttribute('aria-hidden', 'true');
+          index = nextIndex;
+          locked = false;
+        }});
+      } else {
+        current.classList.remove('is-active');
+        current.setAttribute('aria-hidden', 'true');
+        index = nextIndex;
+        locked = false;
+      }
+    }
+
+    prev?.addEventListener('click', () => showSlide((index - 1 + slides.length) % slides.length, -1));
+    next?.addEventListener('click', () => showSlide((index + 1) % slides.length, 1));
+    dots.forEach((dot, i) => dot.addEventListener('click', () => showSlide(i, i > index ? 1 : -1)));
+    let sellerTimer = window.setInterval(() => showSlide((index + 1) % slides.length, 1), 7600);
+    sellerCarousel.addEventListener('mouseenter', () => window.clearInterval(sellerTimer));
+    sellerCarousel.addEventListener('mouseleave', () => {
+      sellerTimer = window.setInterval(() => showSlide((index + 1) % slides.length, 1), 7600);
+    });
+  }
+
+  initSellerCarousel();
+
+  if (window.gsap && window.ScrollTrigger && !reduceMotion) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.benefit-node, .payment-card, .figma-banner, .seller-carousel-section').forEach((el) => {
+      gsap.fromTo(el, { autoAlpha: 0, y: 34, scale: 0.985 }, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        immediateRender: false,
+        duration: 0.72,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', end: 'bottom 12%', toggleActions: 'play none none reverse', invalidateOnRefresh: true }
+      });
+    });
+    gsap.to('.banner-whatsapp', { rotate: 4, y: -10, scale: 1.035, duration: 3.2, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    gsap.fromTo('.wa-business-mark', { rotate: -8 }, { rotate: 8, duration: 2.8, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    gsap.fromTo('.banner-product-card', { y: 20, autoAlpha: 0, rotate: 15 }, {
+      y: 0,
+      autoAlpha: 1,
+      rotate: 10,
+      duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.figma-banner', start: 'top 80%', end: 'bottom 20%', toggleActions: 'play none none reverse' }
+    });
+    gsap.fromTo('.payment-logo', { autoAlpha: 0, y: 12 }, {
+      autoAlpha: 1,
+      y: 0,
+      immediateRender: false,
+      duration: 0.35,
+      stagger: 0.025,
+      ease: 'power2.out',
+      scrollTrigger: { trigger: '.payment-logo-grid', start: 'top 88%', end: 'bottom 12%', toggleActions: 'play none none reverse', invalidateOnRefresh: true }
+    });
+
+    const benefitCards = gsap.utils.toArray('.figma-benefits .benefit-node');
+    const benefitPaths = gsap.utils.toArray('.figma-benefits .benefit-path');
+    const checkoutBox = document.querySelector('.figma-checkout');
+    const checkoutRows = gsap.utils.toArray('.figma-checkout .checkout-method');
+    const mediaCard = document.querySelector('.figma-media-card');
+
+    benefitPaths.forEach((path) => {
+      const length = path.getTotalLength ? path.getTotalLength() : 900;
+      gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+    });
+
+    const benefitTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.figma-benefits-layout',
+        start: 'top 78%',
+        end: 'bottom 24%',
+        toggleActions: 'play none none reverse',
+        invalidateOnRefresh: true
+      }
+    });
+    benefitTl
+      .fromTo(benefitCards, { autoAlpha: 0, x: -46, y: 26, rotateY: -8, scale: 0.96 }, { autoAlpha: 1, x: 0, y: 0, rotateY: 0, scale: 1, duration: 0.62, stagger: 0.14, ease: 'power3.out' }, 0)
+      .to(benefitPaths, { strokeDashoffset: 0, duration: 1.05, stagger: 0.16, ease: 'power2.out' }, 0.24)
+      .fromTo(checkoutBox, { autoAlpha: 0, x: 68, y: 30, rotateY: -9, scale: 0.965 }, { autoAlpha: 1, x: 0, y: 0, rotateY: 0, scale: 1, duration: 0.82, ease: 'power4.out' }, 0.18)
+      .fromTo(checkoutRows, { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.36, stagger: 0.065, ease: 'power2.out' }, 0.62)
+      .fromTo(mediaCard, { autoAlpha: 0, x: 42, y: 32, rotate: 2.2, scale: 0.92 }, { autoAlpha: 1, x: 0, y: 0, rotate: 0, scale: 1, duration: 0.68, ease: 'back.out(1.35)' }, 0.78);
+
+    benefitCards.forEach((card, index) => {
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, { y: -12, scale: 1.018, boxShadow: '12px 0 0 rgba(22,22,29,.22), 0 28px 56px rgba(237,28,39,.18)', duration: 0.26, ease: 'power2.out' });
+        if (benefitPaths[index]) gsap.to(benefitPaths[index], { strokeWidth: 4, duration: 0.2 });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, { y: 0, scale: 1, boxShadow: '8px 0 0 rgba(22,22,29,.18), 0 20px 42px rgba(22,22,29,.08)', duration: 0.3, ease: 'power2.out' });
+        if (benefitPaths[index]) gsap.to(benefitPaths[index], { strokeWidth: 2, duration: 0.2 });
+      });
+    });
+
+    gsap.to(checkoutBox, {
+      y: -12,
+      duration: 3.4,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      scrollTrigger: { trigger: checkoutBox, start: 'top 94%', end: 'bottom 6%', toggleActions: 'play pause resume pause' }
+    });
+    gsap.to(mediaCard, {
+      y: 10,
+      rotate: -0.8,
+      duration: 3.1,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      scrollTrigger: { trigger: mediaCard, start: 'top 94%', end: 'bottom 6%', toggleActions: 'play pause resume pause' }
+    });
+
+    gsap.utils.toArray('.seller-slide').forEach((slide) => {
+      const visual = slide.querySelector('.seller-visual');
+      const pop = slide.querySelector('.seller-pop');
+      const items = slide.querySelectorAll('.seller-item');
+      gsap.fromTo(items, { autoAlpha: 0, y: 18, scale: 0.97 }, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.38,
+        stagger: 0.055,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: slide, start: 'top 82%', end: 'bottom 18%', toggleActions: 'play none none reverse', invalidateOnRefresh: true }
+      });
+      if (visual) {
+        gsap.fromTo(visual, { x: -38, rotateY: 5, scale: 0.98 }, {
+          x: 0,
+          rotateY: 0,
+          scale: 1,
+          duration: 0.75,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: slide, start: 'top 82%', end: 'bottom 18%', toggleActions: 'play none none reverse', invalidateOnRefresh: true }
+        });
+      }
+      if (pop) {
+        gsap.to(pop, { y: -8, duration: 2.8, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+      }
+    });
+
+    document.querySelectorAll('.seller-item').forEach((item) => {
+      item.addEventListener('mouseenter', () => gsap.to(item, { y: -6, scale: 1.012, duration: 0.2, ease: 'power2.out' }));
+      item.addEventListener('mouseleave', () => gsap.to(item, { y: 0, scale: 1, duration: 0.24, ease: 'power2.out' }));
+    });
+
+    gsap.utils.toArray('.shops-workflow [data-workflow-panel]').forEach((panel, i) => {
+      gsap.fromTo(panel,
+        { autoAlpha: 0.25, y: 72, scale: 0.982 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top 92%',
+            end: 'top 46%',
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+      gsap.to(panel, {
+        autoAlpha: 0.18,
+        y: -64,
+        scale: 0.986,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: panel,
+          start: 'bottom 42%',
+          end: 'bottom 10%',
+          scrub: true,
+          invalidateOnRefresh: true
+        }
+      });
+    });
+
+    const tutorial = document.querySelector('.shops-tutorial');
+    if (tutorial) {
+      gsap.fromTo(tutorial.querySelectorAll('.tutorial-copy > *, .tutorial-video'),
+        { autoAlpha: 0, y: 38, scale: 0.985 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.78, stagger: 0.12, ease: 'power3.out', scrollTrigger: { trigger: tutorial, start: 'top 82%', end: 'bottom 18%', toggleActions: 'play none none reverse' } }
+      );
+      gsap.to('.tutorial-play', { scale: 1.09, duration: 1.4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    }
+  }
+})();
+</script>
+<!-- Node 348 dynamic module -->
+
+<script>
+(() => {
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const section = document.querySelector('[data-node-usecase="348:6024"]');
+  if (!section || !window.gsap || !window.ScrollTrigger || reduceMotion) return;
+  gsap.registerPlugin(ScrollTrigger);
+  const hero = section.querySelector('[data-usecase-hero]');
+  const laptop = section.querySelector('.node-laptop');
+  const glow = section.querySelector('.node-red-glow');
+  const cards = gsap.utils.toArray(section.querySelectorAll('[data-usecase-card]'));
+  const dots = gsap.utils.toArray(section.querySelectorAll('[data-usecase-dots] span'));
+
+  gsap.fromTo(section.querySelectorAll('.node-usecase-heading > *'),
+    { autoAlpha: 0.45, y: 34 },
+    { autoAlpha: 1, y: 0, immediateRender: false, duration: .72, stagger: .1, ease: 'power3.out', scrollTrigger: { trigger: section, start: 'top 88%', end: 'bottom 12%', toggleActions: 'play none none reverse', invalidateOnRefresh: true } }
+  );
+  gsap.fromTo(hero,
+    { autoAlpha: 0.45, y: 48, scale: .985 },
+    { autoAlpha: 1, y: 0, scale: 1, immediateRender: false, duration: .8, ease: 'power3.out', scrollTrigger: { trigger: hero, start: 'top 88%', end: 'bottom 12%', toggleActions: 'play none none reverse', invalidateOnRefresh: true } }
+  );
+  gsap.fromTo(laptop,
+    { y: 24, rotateX: 7, rotateZ: -1.6, scale: .96 },
+    { y: 0, rotateX: 0, rotateZ: 0, scale: 1, immediateRender: false, duration: .95, ease: 'power3.out', scrollTrigger: { trigger: hero, start: 'top 88%', end: 'bottom 12%', toggleActions: 'play none none reverse', invalidateOnRefresh: true } }
+  );
+  gsap.to(laptop, { y: -10, rotateZ: .45, duration: 3.6, repeat: -1, yoyo: true, ease: 'sine.inOut', scrollTrigger: { trigger: hero, start: 'top 90%', end: 'bottom 10%', toggleActions: 'play pause resume pause' } });
+  gsap.to(glow, { scale: 1.08, autoAlpha: .85, duration: 2.4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+  gsap.fromTo(cards,
+    { autoAlpha: 0.45, y: 50, rotateX: -5 },
+    { autoAlpha: 1, y: 0, rotateX: 0, immediateRender: false, duration: .68, stagger: .09, ease: 'power3.out', scrollTrigger: { trigger: '.node-benefit-rail', start: 'top 88%', end: 'bottom 12%', toggleActions: 'play none none reverse', invalidateOnRefresh: true } }
+  );
+  cards.forEach((card, i) => {
+    card.addEventListener('mouseenter', () => {
+      cards.forEach((c, idx) => c.classList.toggle('is-active', idx === i));
+      dots.forEach((d, idx) => d.classList.toggle('is-active', idx === i));
+      gsap.to(card, { y: -10, rotateY: i % 2 ? -2 : 2, scale: 1.018, duration: .28, ease: 'power2.out' });
+    });
+    card.addEventListener('mouseleave', () => gsap.to(card, { y: 0, rotateY: 0, scale: 1, duration: .32, ease: 'power2.out' }));
+  });
+
+  const rail = section.querySelector('[data-usecase-rail]');
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top center',
+    end: 'bottom center',
+    onUpdate: self => {
+      const idx = Math.min(cards.length - 1, Math.max(0, Math.round(self.progress * (cards.length - 1))));
+      cards.forEach((c, i) => c.classList.toggle('is-active', i === idx));
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    }
+  });
+})();
+</script>
+
+<script>
+(() => {
+  // Fallback only: if GSAP cannot run, keep all content visible.
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.gsap && !reduceMotion) return;
+  document.documentElement.classList.add('no-gsap-fallback');
+  document.querySelectorAll('section, .section-head, .reveal-up, .reveal-scale, .reveal-group > *, .compare-table, .admin-mockup, .cta-band, .phone-mockup, [data-workflow-panel], .benefit-node, .payment-card, .figma-banner, .seller-carousel-section, .node-usecase-heading > *, [data-usecase-hero], [data-usecase-card]').forEach((el) => {
+    if (el.closest('.dashboard-result[aria-hidden="true"], .dashboard-result[hidden], .seller-slide[aria-hidden="true"]')) return;
+    el.style.visibility = 'visible';
+    el.style.opacity = '1';
+    el.style.transform = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>
