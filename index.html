@@ -1067,16 +1067,29 @@ body {
   min-height: 430px;
   border: 1px solid var(--line);
   border-radius: 24px;
-  background:
-    linear-gradient(120deg, rgba(29,29,29,.96), rgba(29,29,29,.90)),
-    #1d1d1d;
+  background: #1d1d1d;
   color: #fff;
   box-shadow: 0 28px 70px rgba(22,22,29,.16);
   overflow: hidden;
 }
 .figma-banner::before {
-  opacity: .18;
-  background: radial-gradient(circle at 78% 20%, rgba(237,28,39,.65), transparent 32%);
+  opacity: 1;
+  background-image:
+    linear-gradient(90deg, rgba(125,0,6,.94) 0%, rgba(176,17,25,.78) 33%, rgba(29,29,29,.08) 72%),
+    url('https://www.figma.com/api/mcp/asset/6a27a1da-b629-4683-b2d3-6fabf78c3c3d');
+  background-size: cover;
+  background-position: center right;
+  transform: scale(1.01);
+}
+.figma-banner::after {
+  background: linear-gradient(90deg, rgba(137,0,10,.32), transparent 52%);
+  inset: 0;
+  width: auto;
+  height: auto;
+  right: auto;
+  top: auto;
+  border-radius: inherit;
+  transform: none;
 }
 .banner-copy {
   max-width: 560px;
@@ -1088,21 +1101,21 @@ body {
   letter-spacing: -.04em;
 }
 .banner-copy p {
-  color: rgba(255,255,255,.78);
-  font-size: 19px;
-  line-height: 1.48;
+  color: rgba(255,255,255,.96);
+  font-size: 23px;
+  line-height: 1.26;
 }
 .banner-product-card,
 .banner-whatsapp {
   box-shadow: 0 20px 48px rgba(0,0,0,.22);
 }
 .figma-banner .btn-primary {
-  background: #fff;
-  color: var(--brand-black);
+  background: #16161d;
+  color: #fff;
   box-shadow: 0 16px 34px rgba(0,0,0,.24);
 }
 .figma-banner .btn-primary:hover {
-  background: #f2f2f2;
+  background: #000;
 }
 
 .shops-workflow {
@@ -1521,23 +1534,13 @@ body {
   z-index: -1;
 }
 .benefit-node.node-benefit-card::after {
-  content: "";
-  position: absolute;
-  right: -68px;
-  top: 50%;
-  width: 68px;
-  border-top: 3px dotted rgba(237,28,39,.85);
-  transform: translateY(-50%);
+  display: none;
 }
 .benefit-node:nth-child(1)::after {
-  top: 0;
-  height: 134px;
-  border-right: 2px solid rgba(237,28,39,.6);
+  display: none;
 }
 .benefit-node:nth-child(3)::after {
-  top: 100%;
-  height: 88px;
-  border-right: 2px solid rgba(237,28,39,.6);
+  display: none;
 }
 .benefit-icon {
   width: 72px;
@@ -1567,16 +1570,16 @@ body {
   color: #16161d;
 }
 .benefit-connectors {
-  left: 314px;
-  top: 52px;
-  width: 520px;
-  height: 820px;
-  z-index: 1;
+  left: 360px;
+  top: 18px;
+  width: 610px;
+  height: 760px;
+  z-index: 3;
 }
 .benefit-path {
   stroke: rgba(237,28,39,.72);
-  stroke-width: 2;
-  stroke-dasharray: 5 7;
+  stroke-width: 2.2;
+  stroke-dasharray: 5 6;
 }
 .benefit-orbits {
   left: 0;
@@ -1851,21 +1854,26 @@ body {
 /* Final interaction pass: Figma-aligned nodes without replacing the mother structure. */
 .banner-whatsapp {
   overflow: visible;
-  background: rgba(255,255,255,.18);
+  top: 36px;
+  left: 590px;
+  width: 205px;
+  height: 205px;
+  background: rgba(255,255,255,.24);
   border-radius: 50%;
+  z-index: 3;
 }
 .banner-whatsapp::before {
   content: "";
   position: absolute;
   inset: 4px;
   border-radius: 50%;
-  background: rgba(255,255,255,.26);
+  background: rgba(255,255,255,.34);
   box-shadow: 0 20px 46px rgba(0,0,0,.22);
 }
 .banner-whatsapp::after {
   content: "";
   position: absolute;
-  inset: 35px;
+  inset: 38px;
   border: 7px solid #fff;
   border-radius: 50%;
   box-shadow: inset 0 0 0 999px #08c444;
@@ -1876,8 +1884,8 @@ body {
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 92px;
-  height: 92px;
+  width: 98px;
+  height: 98px;
   border-radius: 50%;
   color: #fff;
   font-size: 52px;
@@ -1886,7 +1894,7 @@ body {
   text-shadow: 0 2px 0 rgba(0,0,0,.12);
 }
 .figma-banner .banner-product-card {
-  animation: productCardDrift 5.8s ease-in-out infinite;
+  display: none;
 }
 @keyframes productCardDrift {
   0%, 100% { transform: rotate(10deg) translate3d(0,0,0); }
@@ -1901,8 +1909,13 @@ body {
   stroke: rgba(237,28,39,.78);
   stroke-width: 2.4;
   stroke-linecap: round;
+  stroke-linejoin: round;
   stroke-dasharray: 8 8;
   filter: drop-shadow(0 2px 0 rgba(237,28,39,.12));
+}
+.figma-benefits .benefit-dot {
+  fill: #c70f1a;
+  filter: drop-shadow(0 0 0 rgba(199,15,26,.2));
 }
 .seller-carousel-section {
   min-height: calc(100vh - 84px);
@@ -2253,10 +2266,13 @@ section:not([hidden]) {
 </div>
 <div class="container figma-benefits-layout">
 <div aria-hidden="true" class="benefit-orbits"><span class="orbit one"></span><span class="orbit two"></span><span class="orbit three"></span></div>
-<svg aria-hidden="true" class="benefit-connectors" viewbox="0 0 650 1190">
-<path class="benefit-path" d="M16 54 C 210 48, 300 18, 590 120"></path>
-<path class="benefit-path" d="M92 475 C 250 430, 360 470, 590 580"></path>
-<path class="benefit-path" d="M92 960 C 250 1016, 360 1050, 590 1040"></path>
+<svg aria-hidden="true" class="benefit-connectors" viewbox="0 0 650 760">
+<path class="benefit-path" d="M0 62 H98 V18 H540 V150"></path>
+<circle class="benefit-dot" cx="98" cy="18" r="7"></circle>
+<path class="benefit-path" d="M0 378 H146"></path>
+<circle class="benefit-dot" cx="146" cy="378" r="7"></circle>
+<path class="benefit-path" d="M0 694 H98 V740 H540 V642"></path>
+<circle class="benefit-dot" cx="98" cy="740" r="7"></circle>
 </svg>
 <div aria-label="Beneficios principales de ePayco Shops" class="benefit-stack reveal-group">
 <article class="benefit-node node-benefit-card">
@@ -2371,7 +2387,7 @@ section:not([hidden]) {
 <div class="banner-copy">
 <h2 id="shops-banner-title">Vende fácil y gestiona todo desde un solo lugar</h2>
 <p>Con ePayco Shops crea tu tienda online en minutos, administra tu catálogo, compatible. Usa WhatsApp Business como canal para gestionar pedidos y comunicarte con tus clientes desde un solo lugar.</p>
-<a class="btn btn-primary" href="#registro">Comenzar</a>
+<a class="btn btn-primary" href="#registro">Crear tu tienda online</a>
 </div>
 <div aria-hidden="true" class="banner-whatsapp"><span class="wa-business-mark">B</span></div>
 <div aria-hidden="true" class="banner-product-card"><div class="product-photo"></div><strong>Moda deportiva</strong><span>desde $50.000 COP</span></div>
@@ -3164,6 +3180,7 @@ section:not([hidden]) {
 
     const benefitCards = gsap.utils.toArray('.figma-benefits .benefit-node');
     const benefitPaths = gsap.utils.toArray('.figma-benefits .benefit-path');
+    const benefitDots = gsap.utils.toArray('.figma-benefits .benefit-dot');
     const checkoutBox = document.querySelector('.figma-checkout');
     const checkoutRows = gsap.utils.toArray('.figma-checkout .checkout-method');
     const mediaCard = document.querySelector('.figma-media-card');
@@ -3185,6 +3202,7 @@ section:not([hidden]) {
     benefitTl
       .fromTo(benefitCards, { autoAlpha: 0, x: -46, y: 26, rotateY: -8, scale: 0.96 }, { autoAlpha: 1, x: 0, y: 0, rotateY: 0, scale: 1, duration: 0.62, stagger: 0.14, ease: 'power3.out' }, 0)
       .to(benefitPaths, { strokeDashoffset: 0, duration: 1.05, stagger: 0.16, ease: 'power2.out' }, 0.24)
+      .fromTo(benefitDots, { autoAlpha: 0, scale: 0 }, { autoAlpha: 1, scale: 1, transformOrigin: 'center center', duration: 0.26, stagger: 0.16, ease: 'back.out(1.8)' }, 0.34)
       .fromTo(checkoutBox, { autoAlpha: 0, x: 68, y: 30, rotateY: -9, scale: 0.965 }, { autoAlpha: 1, x: 0, y: 0, rotateY: 0, scale: 1, duration: 0.82, ease: 'power4.out' }, 0.18)
       .fromTo(checkoutRows, { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.36, stagger: 0.065, ease: 'power2.out' }, 0.62)
       .fromTo(mediaCard, { autoAlpha: 0, x: 42, y: 32, rotate: 2.2, scale: 0.92 }, { autoAlpha: 1, x: 0, y: 0, rotate: 0, scale: 1, duration: 0.68, ease: 'back.out(1.35)' }, 0.78);
